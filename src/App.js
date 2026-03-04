@@ -309,7 +309,7 @@ export default function App() {
           <div className="topHeaderInner">
             {/* LOGO placeholder, podmień na <img src=... /> */}
             <div className="topLogo" aria-label="Logo">
-              LOGO 260x50
+              LOGO 240x50
             </div>
 
             {/* Desktop tabs */}
@@ -724,7 +724,7 @@ function ThemeStyle() {
 
       /* LOGO */
       .topLogo{
-        width: 260px;
+        width: 240px;
         height: 50px;
         flex: 0 0 auto;
         border-radius: 10px;

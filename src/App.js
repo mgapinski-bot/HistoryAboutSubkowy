@@ -173,6 +173,32 @@ function HeroArticle({
   );
 }
 
+/* -------------------- Icons -------------------- */
+function IconHamburger() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M4 6h16M4 12h16M4 18h16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+function IconX() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /* -------------------- ROOT -------------------- */
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -246,11 +272,117 @@ export default function App() {
   const opisBody =
     "Znajdujesz się przy charakterystycznych dębach, które od lat są punktem orientacyjnym dla okolicznych mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu i przygotować do kolejnych przystanków na trasie.";
 
+  const tabs = ["Tematy", "Miejsca", "Epoki", "Kontakt"];
+  const [activeTab, setActiveTab] = useState("Tematy");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const onNavigate = (tabName) => {
+    setActiveTab(tabName);
+    setMenuOpen(false);
+
+    // przykładowa nawigacja: scroll do sekcji
+    const idMap = {
+      Tematy: "section-tematy",
+      Miejsca: "section-miejsca",
+      Epoki: "section-epoki",
+      Kontakt: "section-kontakt",
+    };
+    const el = document.getElementById(idMap[tabName]);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
     <>
       <ThemeStyle />
 
       <div className="app">
+        {/* FIXED HEADER */}
+        <header className={`topHeader ${scrolled ? "shadow" : ""}`}>
+          <div className="topHeaderInner">
+            {/* LOGO placeholder, podmień na <img src=... /> */}
+            <div className="topLogo" aria-label="Logo">
+              LOGO 260x50
+            </div>
+
+            {/* Desktop tabs */}
+            <nav className="topNavDesktop" aria-label="Menu główne">
+              {tabs.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  className={`topTab ${activeTab === t ? "active" : ""}`}
+                  onClick={() => onNavigate(t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </nav>
+
+            {/* Mobile trigger */}
+            <button
+              type="button"
+              className="topMobileTrigger"
+              aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span className="topIcon" aria-hidden="true">
+                {menuOpen ? <IconX /> : <IconHamburger />}
+              </span>
+              <span className="topMobileLabel">Menu</span>
+            </button>
+          </div>
+        </header>
+
+        {/* offcanvas overlay */}
+        <div
+          className={`topOverlay ${menuOpen ? "open" : ""}`}
+          onClick={() => setMenuOpen(false)}
+          aria-hidden={!menuOpen}
+        />
+
+        {/* offcanvas sidebar */}
+        <aside
+          className={`topSidebar ${menuOpen ? "open" : ""}`}
+          aria-label="Menu boczne"
+          aria-hidden={!menuOpen}
+        >
+          <div className="topSidebarHeader">
+            <div className="topSidebarTitle">Menu</div>
+            <button
+              type="button"
+              className="topSidebarClose"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Zamknij menu"
+            >
+              <IconX />
+            </button>
+          </div>
+
+          <div className="topSidebarList" role="list">
+            {tabs.map((t) => (
+              <button
+                key={t}
+                type="button"
+                className="topSidebarItem"
+                onClick={() => onNavigate(t)}
+                role="listitem"
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* MAPA W TLE ZA HEADER + content poniżej */}
         <div className="headerMapBg" aria-hidden="true">
           <MapContainer
             center={center}
@@ -271,20 +403,11 @@ export default function App() {
           <div className="headerMapFade" />
         </div>
 
-        <header className={`header ${scrolled ? "shadow" : ""}`}>
-          <div className="headerInner">
-            <div className="brandDot" />
-            <div className="brand">
-              Trasa historyczna
-              <div className="brandSub">QR gra terenowa</div>
-            </div>
-          </div>
-        </header>
-
-        <main className="container">
+        {/* padding-top = 70px (wysokość headera) */}
+        <main className="container contentUnderHeader">
           <div className="grid2">
             <div className="leftCol">
-              <div className="card">
+              <div className="card" id="section-tematy">
                 <h1 className="h1">{welcome}</h1>
 
                 <div className="statusRow">
@@ -346,7 +469,7 @@ export default function App() {
                 }
               />
 
-              <div className="card">
+              <div className="card" id="section-epoki">
                 <div className="cardHd">
                   <div className="cardTitle">Lista przystanków</div>
                   <div className="mutedSmall">Odległości między punktami</div>
@@ -376,10 +499,6 @@ export default function App() {
                       <div className="routeKm">{s.text}</div>
                     </div>
                   ))}
-
-                  {!routeSegments.segs.length && (
-                    <div className="muted">Brak punktów do wyświetlenia.</div>
-                  )}
                 </div>
 
                 <div className="row gap wrap" style={{ marginTop: 10 }}>
@@ -393,7 +512,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rightSticky">
+            <div className="rightSticky" id="section-miejsca">
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Mapa trasy</div>
@@ -447,7 +566,6 @@ export default function App() {
                           <div className="mutedSmall">
                             Kliknij, żeby zobaczyć zdjęcie
                           </div>
-
                           <div
                             className="row gap wrap"
                             style={{ marginTop: 8 }}
@@ -486,7 +604,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="card">
+              <div className="card" id="section-kontakt">
                 <div className="cardHd">
                   <div className="cardTitle">Film</div>
                   <div className="mutedSmall">Materiał o miejscu</div>
@@ -578,7 +696,173 @@ function ThemeStyle() {
         overflow-x: clip;
       }
 
-      /* MAPA W TLE ZA HEADER */
+      /* ===== FIXED TOP HEADER ===== */
+      .topHeader{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        z-index: 5000;
+        background: rgba(255,255,255,.92);
+        border-bottom: 1px solid rgba(15,23,42,.10);
+        backdrop-filter: blur(10px);
+      }
+      .topHeader.shadow{box-shadow:0 10px 22px rgba(2,6,23,.14)}
+
+      .topHeaderInner{
+        height: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      /* LOGO */
+      .topLogo{
+        width: 260px;
+        height: 50px;
+        flex: 0 0 auto;
+        border-radius: 10px;
+        background: rgba(3,79,189,.08);
+        border: 1px solid rgba(3,79,189,.16);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 13px;
+        color: rgba(11,19,42,.85);
+      }
+
+      /* DESKTOP MENU -> PRAWA STRONA */
+      .topNavDesktop{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+      }
+
+      .topTab{
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-weight: 900;
+        font-size: 13px;
+        color: rgba(11,19,42,.84);
+      }
+      .topTab:hover{background: rgba(3,145,232,.08)}
+      .topTab.active{
+        background: rgba(3,79,189,.10);
+        color: rgba(3,79,189,.95);
+      }
+
+      /* MOBILE TRIGGER (hamburger) -> PRAWA STRONA */
+      .topMobileTrigger{
+        margin-left: auto;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        color: rgba(11,19,42,.88);
+        font-weight: 950;
+      }
+      .topMobileTrigger:hover{background: rgba(3,145,232,.08)}
+      .topIcon{display:inline-flex}
+      .topMobileLabel{font-size: 13px}
+
+      /* OVERLAY */
+      .topOverlay{
+        position: fixed;
+        inset: 0;
+        background: rgba(2,6,23,.35);
+        z-index: 4900;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .18s ease;
+      }
+      .topOverlay.open{
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* SIDEBAR */
+      .topSidebar{
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        width: min(340px, 88vw);
+        background: #ffffff;
+        z-index: 5001;
+        transform: translateX(100%);
+        transition: transform .22s ease;
+        border-left: 1px solid rgba(15,23,42,.10);
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+      .topSidebar.open{transform: translateX(0)}
+
+      .topSidebarHeader{
+        height: 70px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(15,23,42,.10);
+      }
+      .topSidebarTitle{
+        font-weight: 950;
+        color: rgba(11,19,42,.92);
+      }
+      .topSidebarClose{
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 999px;
+        color: rgba(11,19,42,.88);
+      }
+      .topSidebarClose:hover{background: rgba(3,145,232,.08)}
+
+      .topSidebarList{
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+      .topSidebarItem{
+        border: 1px solid rgba(15,23,42,.10);
+        background: rgba(255,255,255,.95);
+        cursor: pointer;
+        padding: 12px 12px;
+        border-radius: 14px;
+        font-weight: 950;
+        font-size: 14px;
+        color: rgba(11,19,42,.86);
+        text-align: left;
+      }
+      .topSidebarItem:hover{
+        background: rgba(3,145,232,.08);
+        border-color: rgba(3,145,232,.20);
+      }
+
+      /* RESPONSYWNOŚĆ */
+      @media (max-width: 768px){
+        .topNavDesktop{display:none}
+        .topMobileTrigger{display:inline-flex}
+      }
+
+      /* ===== MAPA W TLE ZA HEADER ===== */
       .headerMapBg{
         position: absolute;
         top: 0;
@@ -600,35 +884,6 @@ function ThemeStyle() {
         background: linear-gradient(180deg, rgba(2,6,23,.22), rgba(2,6,23,.04) 55%, rgba(247,251,255,1) 100%);
       }
 
-      .header{
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background: linear-gradient(90deg, var(--blue1), var(--blue3));
-        color: white;
-        border-bottom: 1px solid rgba(255,255,255,.16);
-      }
-      .header.shadow{box-shadow:0 8px 18px rgba(2,6,23,.22)}
-
-      .headerInner{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        padding: 12px var(--pad);
-      }
-
-      .brandDot{
-        width: 12px;
-        height: 12px;
-        border-radius: 999px;
-        background: rgba(255,255,255,.92);
-        box-shadow: 0 0 0 4px rgba(255,255,255,.12);
-        flex: 0 0 auto;
-      }
-      .brand{font-weight:800; letter-spacing:.2px; line-height:1.05}
-      .brandSub{font-size:12px; opacity:.9; font-weight:600; margin-top:2px}
-
       .container{
         position: relative;
         z-index: 2;
@@ -636,13 +891,12 @@ function ThemeStyle() {
         display:grid;
         gap: var(--gap);
       }
-      .container:before{
-        content:"";
-        display:block;
-        height: 78px;
+
+      /* kluczowe: content pod fixed headerem */
+      .contentUnderHeader{
+        padding-top: 90px;
       }
 
-      /* ZAWSZE JEDNA KOLUMNA dla aplikacji */
       .grid2{
         display: grid;
         grid-template-columns: 1fr;
@@ -677,7 +931,6 @@ function ThemeStyle() {
       .muted{color:var(--muted)}
 
       .h1{font-size:18px;margin:0 0 10px;line-height:1.25}
-      .p{margin:0;color:rgba(11,19,42,.88);line-height:1.45}
 
       .statusRow{display:flex;flex-wrap:wrap;gap:8px}
       .pill{
@@ -706,19 +959,11 @@ function ThemeStyle() {
         text-decoration: none;
       }
       .btn:hover{background: rgba(3,145,232,.08)}
-      .btn.primary{
-        background: var(--blue2);
-        border-color: var(--blue2);
-        color: white;
-      }
-      .btn.primary:hover{background: var(--blue3)}
       .btn.ghost{
         background: rgba(255,255,255,.12);
         border-color: rgba(255,255,255,.35);
         color: white;
       }
-      .btn.ghost:hover{background: rgba(255,255,255,.18)}
-      .btnSmall{padding: 8px 10px; font-size: 12px}
 
       .mapWrap{
         height: 320px;
@@ -747,11 +992,6 @@ function ThemeStyle() {
         border:0;
         background:transparent;
         cursor:pointer;
-      }
-      .imgBtn:focus{
-        outline: 3px solid rgba(3,145,232,.35);
-        outline-offset: 3px;
-        border-radius: 16px;
       }
 
       .infoGrid{
@@ -785,19 +1025,13 @@ function ThemeStyle() {
         display:block;
       }
 
-      /* Lista przystanków */
       .routeMeta{
         display:flex;
         flex-wrap:wrap;
         gap:8px;
         margin-bottom: 10px;
       }
-
-      .routeList{
-        display: grid;
-        gap: 10px;
-      }
-
+      .routeList{display:grid;gap:10px}
       .routeRow{
         display:grid;
         grid-template-columns: 26px 1fr auto;
@@ -808,7 +1042,6 @@ function ThemeStyle() {
         border-radius: 14px;
         background: rgba(255,255,255,.78);
       }
-
       .routeIdx{
         width: 26px;
         height: 26px;
@@ -821,20 +1054,8 @@ function ThemeStyle() {
         background: rgba(3,145,232,.10);
         border: 1px solid rgba(3,145,232,.18);
       }
-
-      .routeTitle{
-        font-weight: 900;
-        font-size: 13px;
-        color: rgba(11,19,42,.88);
-        line-height: 1.2;
-      }
-
-      .routeArrow{
-        color: rgba(71,85,105,.9);
-        font-weight: 900;
-        padding: 0 4px;
-      }
-
+      .routeTitle{font-weight:900;font-size:13px;color:rgba(11,19,42,.88);line-height:1.2}
+      .routeArrow{color: rgba(71,85,105,.9); font-weight: 900; padding: 0 4px}
       .routeKm{
         font-weight: 900;
         font-size: 12px;
@@ -848,7 +1069,6 @@ function ThemeStyle() {
 
       .footerSpace{height: 14px}
 
-      /* HERO */
       .heroArticle{
         border-radius: var(--radius);
         overflow: hidden;
@@ -856,19 +1076,18 @@ function ThemeStyle() {
         box-shadow: var(--shadow);
         background: var(--card);
       }
-
-      /* Mobile: zdjęcie u góry, opis pod spodem */
       .heroMedia{
         position: relative;
-        height: 220px;
-        background: #0b132a;
+        max-height: 340px;
+        overflow: hidden;
+        border-radius: 16px;
       }
       .heroImg{
         width: 100%;
-        height: 100%;
+        height: auto;
+        max-height: 340px;
         object-fit: cover;
-        display:block;
-        transform: scale(1.02);
+        display: block;
       }
       .heroGradient{
         position: absolute;
@@ -876,9 +1095,7 @@ function ThemeStyle() {
         background: linear-gradient(180deg, rgba(2,6,23,.15), rgba(2,6,23,.10) 40%, rgba(2,6,23,.55) 100%);
       }
 
-      .heroOverlayCard{
-        padding: 14px var(--pad) 14px;
-      }
+      .heroOverlayCard{padding: 14px var(--pad) 14px}
       .heroTag{
         display:inline-flex;
         align-items:center;
@@ -891,30 +1108,10 @@ function ThemeStyle() {
         letter-spacing: .2px;
         margin-bottom: 10px;
       }
-      .heroTitle{
-        margin: 0 0 8px;
-        font-size: 22px;
-        line-height: 1.05;
-        font-weight: 950;
-        color: rgba(11,19,42,.92);
-      }
-      .heroSubtitle{
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
-      .heroBody{
-        margin: 0;
-        color: rgba(11,19,42,.88);
-        line-height: 1.45;
-      }
-      .heroMeta{
-        margin-top: 10px;
-        font-size: 12px;
-        color: rgba(71,85,105,.9);
-        font-weight: 700;
-      }
+      .heroTitle{margin: 0 0 8px;font-size: 22px;line-height: 1.05;font-weight: 950;color: rgba(11,19,42,.92)}
+      .heroSubtitle{font-size: 12px;color: var(--muted);font-weight: 700;margin-bottom: 8px}
+      .heroBody{margin: 0;color: rgba(11,19,42,.88);line-height: 1.45}
+      .heroMeta{margin-top: 10px;font-size: 12px;color: rgba(71,85,105,.9);font-weight: 700}
 
       .heroBelow{
         padding: 12px var(--pad) 14px;
@@ -922,7 +1119,6 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
-      /* FULLSCREEN IMAGE */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -931,14 +1127,12 @@ function ThemeStyle() {
         display: grid;
         padding: 0;
       }
-
       .imgModalShell{
         width: 100%;
         height: 100%;
         display: grid;
         grid-template-rows: auto 1fr;
       }
-
       .imgModalHd{
         display:flex;
         align-items:center;
@@ -948,13 +1142,11 @@ function ThemeStyle() {
         background: rgba(0,0,0,.88);
         border-bottom: 1px solid rgba(255,255,255,.12);
       }
-
       .imgModalTitle{
         font-weight: 900;
         color: rgba(255,255,255,.94);
         font-size: 13px;
       }
-
       .imgModalBd{
         display:flex;
         align-items:center;
@@ -962,7 +1154,6 @@ function ThemeStyle() {
         padding: 10px;
         overflow: hidden;
       }
-
       .imgFull{
         max-width: 90vw;
         max-height: 90vh;
@@ -973,7 +1164,6 @@ function ThemeStyle() {
         display:block;
       }
 
-      /* Mobile małe */
       @media (max-width: 360px){
         .gallery{ grid-template-columns: 1fr; }
         .infoGrid{ grid-template-columns: 1fr; }
@@ -981,34 +1171,8 @@ function ThemeStyle() {
         .routeKm{ grid-column: 1 / -1; justify-self: start; }
       }
 
-      /* Tablet */
-      @media (min-width: 700px){
-        .container{
-          max-width: 980px;
-          margin: 0 auto;
-          padding: 16px var(--pad) 22px;
-        }
-        .mapWrap{ height: clamp(320px, 45vh, 520px); }
-        .img{ height: 160px; }
-      }
-
-      /* Desktop: zdjęcie po lewej, opis obok, a pod spodem reszta */
       @media (min-width: 980px){
-        .container{
-          max-width: 1100px;
-          margin: 0 auto;
-          padding: 18px var(--pad) 26px;
-          gap: var(--gap);
-        }
-        .container:before{ height: 110px; }
-
-        .mapWrap{ height: min(60vh, 560px); }
-        .img{ height: 180px; }
-
-        .h1{font-size: 22px}
-        .p{font-size: 15px}
-        .btn{font-size: 13px; padding: 11px 14px}
-
+        .container{max-width: 1100px;margin:0 auto}
         .heroArticle{
           display: grid;
           grid-template-columns: 1.25fr 0.75fr;
@@ -1017,21 +1181,14 @@ function ThemeStyle() {
           padding: 16px;
           background: var(--card);
         }
-
         .heroMedia{
           height: auto;
           min-height: 340px;
           border-radius: 16px;
           overflow: hidden;
         }
-
-        .heroImg{
-          transform: none;
-        }
-
+        .heroImg{transform:none}
         .heroOverlayCard{
-          position: static;
-          width: auto;
           background: rgba(255,255,255,.94);
           border: 1px solid rgba(15,23,42,.10);
           border-radius: 16px;
@@ -1039,22 +1196,13 @@ function ThemeStyle() {
           padding: 16px;
           align-self: start;
         }
-
         .heroBelow{
           grid-column: 1 / -1;
           padding: 14px 0 0;
           border-top: 1px solid rgba(15,23,42,.10);
           background: transparent;
         }
-
-        .heroTitle{
-          font-size: 32px;
-          letter-spacing: -.2px;
-        }
-      }
-
-      @media (min-width: 1300px){
-        .container{max-width: 1200px}
+        .heroTitle{font-size: 32px}
       }
     `}</style>
   );

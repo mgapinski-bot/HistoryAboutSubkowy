@@ -144,6 +144,36 @@ function getYouTubeId(url) {
   }
 }
 
+/* -------------------- HERO ARTICLE (tekst na zdjęciu na desktopie) -------------------- */
+function HeroArticle({
+  imgSrc,
+  tagText,
+  title,
+  subtitle,
+  body,
+  meta,
+  childrenBelow,
+}) {
+  return (
+    <section className="heroArticle">
+      <div className="heroMedia">
+        <img className="heroImg" src={imgSrc} alt={title} />
+        <div className="heroGradient" aria-hidden="true" />
+      </div>
+
+      <div className="heroOverlayCard">
+        <div className="heroTag">{tagText}</div>
+        <h2 className="heroTitle">{title}</h2>
+        {subtitle ? <div className="heroSubtitle">{subtitle}</div> : null}
+        {body ? <p className="heroBody">{body}</p> : null}
+        {meta ? <div className="heroMeta">{meta}</div> : null}
+      </div>
+
+      {childrenBelow ? <div className="heroBelow">{childrenBelow}</div> : null}
+    </section>
+  );
+}
+
 /* -------------------- ROOT -------------------- */
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -215,11 +245,14 @@ export default function App() {
 
   const welcome = "Witamy na pierwszym przystanku związanym z historią Subkowa";
 
+  const opisBody =
+    "Znajdujesz się przy charakterystycznych dębach, które od lat są punktem orientacyjnym dla okolicznych mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu i przygotować do kolejnych przystanków na trasie.";
+
   return (
     <>
       <ThemeStyle />
 
-      <div className="phoneOnly">
+      <div className="app">
         {/* MAPA W TLE ZA HEADER */}
         <div className="headerMapBg" aria-hidden="true">
           <MapContainer
@@ -266,56 +299,59 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="card">
-                <div className="cardHd">
-                  <div className="cardTitle">Opis miejsca</div>
-                  <div className="mutedSmall">Dwa dęby, punkt startowy</div>
-                </div>
+              {/* HERO jak na portalu: na desktopie tekst na zdjęciu, na mobile pod zdjęciem */}
+              <HeroArticle
+                imgSrc={twoOaksImg}
+                tagText="OPIS MIEJSCA"
+                title="Dwa dęby, punkt startowy"
+                subtitle="Przystanek 1"
+                body={opisBody}
+                meta="Subkowy, trasa historyczna"
+                childrenBelow={
+                  <>
+                    <div className="gallery">
+                      <button
+                        className="imgBtn"
+                        onClick={() =>
+                          setOpenImg({ src: twoOaksImg, alt: "Dwa dęby" })
+                        }
+                        aria-label="Otwórz zdjęcie: Dwa dęby"
+                      >
+                        <img className="img" src={twoOaksImg} alt="Dwa dęby" />
+                      </button>
 
-                <p className="p">
-                  Znajdujesz się przy charakterystycznych dębach, które od lat
-                  są punktem orientacyjnym dla okolicznych mieszkańców. To dobry
-                  moment, żeby rozejrzeć się po otoczeniu i przygotować do
-                  kolejnych przystanków na trasie.
-                </p>
-
-                <div className="gallery">
-                  <button
-                    className="imgBtn"
-                    onClick={() =>
-                      setOpenImg({ src: twoOaksImg, alt: "Dwa dęby" })
-                    }
-                    aria-label="Otwórz zdjęcie: Dwa dęby"
-                  >
-                    <img className="img" src={twoOaksImg} alt="Dwa dęby" />
-                  </button>
-
-                  <button
-                    className="imgBtn"
-                    onClick={() =>
-                      setOpenImg({ src: twoOaks2Img, alt: "Zabytek 1" })
-                    }
-                    aria-label="Otwórz zdjęcie: Zabytek 1"
-                  >
-                    <img className="img" src={twoOaks2Img} alt="Zabytek 1" />
-                  </button>
-                </div>
-
-                <div className="infoGrid">
-                  <div className="infoBox">
-                    <div className="infoLabel">Gdzie jestem</div>
-                    <div className="infoValue">Subkowy, przystanek 1</div>
-                  </div>
-                  <div className="infoBox">
-                    <div className="infoLabel">Co dalej</div>
-                    <div className="infoValue">
-                      Idź do najbliższego punktu na mapie
+                      <button
+                        className="imgBtn"
+                        onClick={() =>
+                          setOpenImg({ src: twoOaks2Img, alt: "Zabytek 1" })
+                        }
+                        aria-label="Otwórz zdjęcie: Zabytek 1"
+                      >
+                        <img
+                          className="img"
+                          src={twoOaks2Img}
+                          alt="Zabytek 1"
+                        />
+                      </button>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* NOWY KONTENER: lista przystanków i odległości */}
+                    <div className="infoGrid">
+                      <div className="infoBox">
+                        <div className="infoLabel">Gdzie jestem</div>
+                        <div className="infoValue">Subkowy, przystanek 1</div>
+                      </div>
+                      <div className="infoBox">
+                        <div className="infoLabel">Co dalej</div>
+                        <div className="infoValue">
+                          Idź do najbliższego punktu na mapie
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                }
+              />
+
+              {/* Lista przystanków i odległości */}
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Lista przystanków</div>
@@ -458,7 +494,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* FILM, jako ostatni element po prawej na desktopie */}
+              {/* FILM */}
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Film</div>
@@ -533,19 +569,22 @@ function ThemeStyle() {
 
       *{box-sizing:border-box}
       html,body{height:100%}
-      body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+      body{
+        margin:0;
+        font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+        background:var(--bg);
+        color:var(--text);
+      }
 
-      .phoneOnly{
+      .app{
         width: 100%;
-        max-width: 430px;
-        margin: 0 auto;
         min-height: 100vh;
         position: relative;
         background:
           radial-gradient(900px 500px at 15% 0%, rgba(3,145,232,.12), transparent 60%),
           radial-gradient(900px 500px at 85% 10%, rgba(34,197,94,.10), transparent 60%),
           var(--bg);
-        overflow: hidden;
+        overflow-x: clip;
       }
 
       /* ===== MAPA W TLE ZA HEADER ===== */
@@ -554,7 +593,7 @@ function ThemeStyle() {
         top: 0;
         left: 0;
         right: 0;
-        height: 170px;
+        height: clamp(170px, 22vh, 260px);
         z-index: 1;
         pointer-events: none;
         overflow: hidden;
@@ -567,8 +606,7 @@ function ThemeStyle() {
       .headerMapFade{
         position: absolute;
         inset: 0;
-        background:
-          linear-gradient(180deg, rgba(2,6,23,.22), rgba(2,6,23,.04) 55%, rgba(247,251,255,1) 100%);
+        background: linear-gradient(180deg, rgba(2,6,23,.22), rgba(2,6,23,.04) 55%, rgba(247,251,255,1) 100%);
       }
 
       .header{
@@ -644,6 +682,7 @@ function ThemeStyle() {
       }
       .cardTitle{font-weight:800; color: var(--blue1)}
       .mutedSmall{font-size:12px;color:var(--muted)}
+      .muted{color:var(--muted)}
 
       .h1{font-size:18px;margin:0 0 10px;line-height:1.25}
       .p{margin:0;color:rgba(11,19,42,.88);line-height:1.45}
@@ -817,7 +856,80 @@ function ThemeStyle() {
 
       .footerSpace{height: 14px}
 
-      /* ===== FULLSCREEN IMAGE (responsive) ===== */
+      /* ===== HERO ARTICLE (jak portal: tekst na zdjęciu na desktopie) ===== */
+      .heroArticle{
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid rgba(15,23,42,.10);
+        box-shadow: var(--shadow);
+        background: var(--card);
+      }
+
+      .heroMedia{
+        position: relative;
+        height: 220px;
+        background: #0b132a;
+      }
+      .heroImg{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display:block;
+        transform: scale(1.02);
+      }
+      .heroGradient{
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(2,6,23,.15), rgba(2,6,23,.10) 40%, rgba(2,6,23,.55) 100%);
+      }
+
+      .heroOverlayCard{
+        padding: 14px var(--pad) 14px;
+      }
+      .heroTag{
+        display:inline-flex;
+        align-items:center;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: var(--blue1);
+        color: white;
+        font-weight: 900;
+        font-size: 12px;
+        letter-spacing: .2px;
+        margin-bottom: 10px;
+      }
+      .heroTitle{
+        margin: 0 0 8px;
+        font-size: 22px;
+        line-height: 1.05;
+        font-weight: 950;
+        color: rgba(11,19,42,.92);
+      }
+      .heroSubtitle{
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .heroBody{
+        margin: 0;
+        color: rgba(11,19,42,.88);
+        line-height: 1.45;
+      }
+      .heroMeta{
+        margin-top: 10px;
+        font-size: 12px;
+        color: rgba(71,85,105,.9);
+        font-weight: 700;
+      }
+
+      .heroBelow{
+        padding: 12px var(--pad) 14px;
+        border-top: 1px solid rgba(15,23,42,.10);
+        background: rgba(255,255,255,.80);
+      }
+
+      /* ===== FULLSCREEN IMAGE ===== */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -859,24 +971,36 @@ function ThemeStyle() {
       }
 
       .imgFull{
-        max-width: 90vw;   
-        max-height: 90vh;  
+        max-width: 90vw;
+        max-height: 90vh;
         width: auto;
         height: auto;
         object-fit: contain;
         border-radius: 16px;
         display:block;
       }
-      @media (min-width: 900px){
-        .phoneOnly{
-          max-width: none;
-          overflow: visible;
-        }
 
-        .headerMapBg{
-          height: 220px;
-        }
+      /* Mobile małe: elementy jeden pod drugim */
+      @media (max-width: 360px){
+        .gallery{ grid-template-columns: 1fr; }
+        .infoGrid{ grid-template-columns: 1fr; }
+        .routeRow{ grid-template-columns: 26px 1fr; }
+        .routeKm{ grid-column: 1 / -1; justify-self: start; }
+      }
 
+      /* Tablet */
+      @media (min-width: 700px){
+        .container{
+          max-width: 980px;
+          margin: 0 auto;
+          padding: 16px var(--pad) 22px;
+        }
+        .mapWrap{ height: clamp(320px, 45vh, 520px); }
+        .img{ height: 160px; }
+      }
+
+      /* Desktop: tekst jako overlay na zdjęciu, jak na portalu */
+      @media (min-width: 980px){
         .container{
           max-width: 1200px;
           margin: 0 auto;
@@ -884,9 +1008,7 @@ function ThemeStyle() {
           gap: var(--gap);
         }
 
-        .container:before{
-          height: 110px;
-        }
+        .container:before{ height: 110px; }
 
         .grid2{
           grid-template-columns: 1.1fr 0.9fr;
@@ -898,23 +1020,44 @@ function ThemeStyle() {
           top: 74px;
         }
 
-        .mapWrap{
-          height: min(54vh, 520px);
-        }
+        .mapWrap{ height: min(54vh, 560px); }
+        .img{ height: 180px; }
 
-        .img{
-          height: 180px;
-        }
-
-        .routeTitle{font-size: 14px}
         .h1{font-size: 22px}
         .p{font-size: 15px}
         .btn{font-size: 13px; padding: 11px 14px}
 
-        /* modal padding and rounding on desktop */
-        .imgModalHd{ padding: 14px 18px }
-        .imgModalBd{ padding: 18px }
-        .imgFull{ border-radius: 16px }
+        /* HERO overlay */
+        .heroArticle{
+          position: relative;
+          padding-bottom: 0;
+        }
+
+        .heroMedia{
+          height: 320px;
+        }
+
+        .heroOverlayCard{
+          position: absolute;
+          left: 18px;
+          bottom: 18px;
+          width: min(520px, 58%);
+          background: rgba(255,255,255,.94);
+          border: 1px solid rgba(15,23,42,.10);
+          border-radius: 16px;
+          box-shadow: 0 16px 40px rgba(2,6,23,.22);
+          padding: 16px 16px 14px;
+        }
+
+        .heroBelow{
+          padding-top: 16px;
+          background: var(--card);
+        }
+
+        .heroTitle{
+          font-size: 34px;
+          letter-spacing: -.2px;
+        }
       }
 
       @media (min-width: 1300px){

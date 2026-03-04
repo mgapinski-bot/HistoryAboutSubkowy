@@ -145,9 +145,9 @@ function useBodyScrollLock(isLocked) {
     const prevOverflow = body.style.overflow;
     const prevPaddingRight = body.style.paddingRight;
 
-    // avoid "jump" when scrollbar disappears
     const scrollBarWidth =
       window.innerWidth - document.documentElement.clientWidth;
+
     body.style.overflow = "hidden";
     if (scrollBarWidth > 0) body.style.paddingRight = `${scrollBarWidth}px`;
 
@@ -158,9 +158,25 @@ function useBodyScrollLock(isLocked) {
   }, [isLocked]);
 }
 
+/* -------------------- Hook: hide header behind modal -------------------- */
+function useHeaderBehindModal(isOn) {
+  useEffect(() => {
+    const header = document.querySelector(".topHeader");
+    if (!header) return;
+
+    const prevZ = header.style.zIndex;
+    if (isOn) header.style.zIndex = "0";
+
+    return () => {
+      header.style.zIndex = prevZ || "";
+    };
+  }, [isOn]);
+}
+
 /* -------------------- Image fullscreen modal -------------------- */
 function ImageModal({ src, alt, onClose }) {
   useBodyScrollLock(true);
+  useHeaderBehindModal(true);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -182,7 +198,6 @@ function ImageModal({ src, alt, onClose }) {
         <div className="imgModalHd">
           <div className="imgModalTitle">Podgląd zdjęcia</div>
 
-          {/* X zawsze widoczny */}
           <button
             type="button"
             className="modalCloseBtn"
@@ -202,9 +217,10 @@ function ImageModal({ src, alt, onClose }) {
   );
 }
 
-/* -------------------- Modal: video in fullscreen (optional) -------------------- */
+/* -------------------- Modal: video in fullscreen -------------------- */
 function VideoModal({ src, onClose }) {
   useBodyScrollLock(true);
+  useHeaderBehindModal(true);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -291,7 +307,6 @@ export default function App() {
   const [openImg, setOpenImg] = useState(null);
   const [videoOpen, setVideoOpen] = useState(false);
 
-  // dodatkowo, jak jest otwarty sidebar (mobile menu) też blokujemy scroll
   const [menuOpen, setMenuOpen] = useState(false);
   useBodyScrollLock(menuOpen);
 
@@ -378,7 +393,6 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // UX: nie ładuj filmu od razu, dopiero gdy sekcja filmu pojawi się na ekranie
   const videoWrapRef = useRef(null);
   const [loadVideo, setLoadVideo] = useState(false);
 
@@ -406,7 +420,6 @@ export default function App() {
       <ThemeStyle />
 
       <div className="app">
-        {/* FIXED HEADER */}
         <header className={`topHeader ${scrolled ? "shadow" : ""}`}>
           <div className="topHeaderInner">
             <div className="topLogo" aria-label="Logo">
@@ -479,7 +492,6 @@ export default function App() {
           </div>
         </aside>
 
-        {/* MAPA W TLE ZA HEADER */}
         <div className="headerMapBg" aria-hidden="true">
           <MapContainer
             center={center}
@@ -1277,7 +1289,7 @@ function ThemeStyle() {
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,.92);
-        z-index: 3000;
+        z-index: 9000;
         display: grid;
         padding: 0;
       }
@@ -1313,6 +1325,8 @@ function ThemeStyle() {
       }
 
       .modalCloseBtn{
+        position: relative;
+        z-index: 9001;
         display: inline-flex;
         align-items: center;
         justify-content: center;

@@ -29,7 +29,7 @@ const theme = {
   muted: "#475569",
 };
 
-/* -------------------- Slubki fixed location -------------------- */
+/* -------------------- Subkowy fixed location -------------------- */
 const SLUBKI = {
   lat: 53.98607676741472,
   lng: 18.752940205999938,
@@ -72,7 +72,6 @@ function toRad(v) {
   return (v * Math.PI) / 180;
 }
 
-// Haversine distance in meters
 function distanceMeters(a, b) {
   const R = 6371000;
   const dLat = toRad(b.lat - a.lat);
@@ -144,7 +143,7 @@ function getYouTubeId(url) {
   }
 }
 
-/* -------------------- HERO ARTICLE (tekst na zdjęciu na desktopie) -------------------- */
+/* -------------------- HERO ARTICLE -------------------- */
 function HeroArticle({
   imgSrc,
   tagText,
@@ -218,7 +217,6 @@ export default function App() {
     [center, points]
   );
 
-  // lista odcinków trasy: Start -> P1 -> P2 -> ...
   const routeSegments = useMemo(() => {
     const nodes = [
       { id: "start", title: "Subkowy, start", lat: loc.lat, lng: loc.lng },
@@ -253,7 +251,6 @@ export default function App() {
       <ThemeStyle />
 
       <div className="app">
-        {/* MAPA W TLE ZA HEADER */}
         <div className="headerMapBg" aria-hidden="true">
           <MapContainer
             center={center}
@@ -286,7 +283,6 @@ export default function App() {
 
         <main className="container">
           <div className="grid2">
-            {/* LEWA KOLUMNA */}
             <div className="leftCol">
               <div className="card">
                 <h1 className="h1">{welcome}</h1>
@@ -299,7 +295,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* HERO jak na portalu: na desktopie tekst na zdjęciu, na mobile pod zdjęciem */}
               <HeroArticle
                 imgSrc={twoOaksImg}
                 tagText="OPIS MIEJSCA"
@@ -351,7 +346,6 @@ export default function App() {
                 }
               />
 
-              {/* Lista przystanków i odległości */}
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Lista przystanków</div>
@@ -399,9 +393,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* PRAWA KOLUMNA (sticky na desktopie) */}
             <div className="rightSticky">
-              {/* MAPA */}
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Mapa trasy</div>
@@ -494,7 +486,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* FILM */}
               <div className="card">
                 <div className="cardHd">
                   <div className="cardTitle">Film</div>
@@ -587,7 +578,7 @@ function ThemeStyle() {
         overflow-x: clip;
       }
 
-      /* ===== MAPA W TLE ZA HEADER ===== */
+      /* MAPA W TLE ZA HEADER */
       .headerMapBg{
         position: absolute;
         top: 0;
@@ -651,6 +642,7 @@ function ThemeStyle() {
         height: 78px;
       }
 
+      /* ZAWSZE JEDNA KOLUMNA dla aplikacji */
       .grid2{
         display: grid;
         grid-template-columns: 1fr;
@@ -793,7 +785,7 @@ function ThemeStyle() {
         display:block;
       }
 
-      /* ===== Lista przystanków ===== */
+      /* Lista przystanków */
       .routeMeta{
         display:flex;
         flex-wrap:wrap;
@@ -856,7 +848,7 @@ function ThemeStyle() {
 
       .footerSpace{height: 14px}
 
-      /* ===== HERO ARTICLE (jak portal: tekst na zdjęciu na desktopie) ===== */
+      /* HERO */
       .heroArticle{
         border-radius: var(--radius);
         overflow: hidden;
@@ -865,6 +857,7 @@ function ThemeStyle() {
         background: var(--card);
       }
 
+      /* Mobile: zdjęcie u góry, opis pod spodem */
       .heroMedia{
         position: relative;
         height: 220px;
@@ -929,7 +922,7 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
-      /* ===== FULLSCREEN IMAGE ===== */
+      /* FULLSCREEN IMAGE */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -980,7 +973,7 @@ function ThemeStyle() {
         display:block;
       }
 
-      /* Mobile małe: elementy jeden pod drugim */
+      /* Mobile małe */
       @media (max-width: 360px){
         .gallery{ grid-template-columns: 1fr; }
         .infoGrid{ grid-template-columns: 1fr; }
@@ -999,69 +992,69 @@ function ThemeStyle() {
         .img{ height: 160px; }
       }
 
-      /* Desktop: tekst jako overlay na zdjęciu, jak na portalu */
+      /* Desktop: zdjęcie po lewej, opis obok, a pod spodem reszta */
       @media (min-width: 980px){
         .container{
-          max-width: 1200px;
+          max-width: 1100px;
           margin: 0 auto;
           padding: 18px var(--pad) 26px;
           gap: var(--gap);
         }
-
         .container:before{ height: 110px; }
 
-        .grid2{
-          grid-template-columns: 1.1fr 0.9fr;
-          gap: var(--gap);
-        }
-
-        .rightSticky{
-          position: sticky;
-          top: 74px;
-        }
-
-        .mapWrap{ height: min(54vh, 560px); }
+        .mapWrap{ height: min(60vh, 560px); }
         .img{ height: 180px; }
 
         .h1{font-size: 22px}
         .p{font-size: 15px}
         .btn{font-size: 13px; padding: 11px 14px}
 
-        /* HERO overlay */
         .heroArticle{
-          position: relative;
-          padding-bottom: 0;
-        }
-
-        .heroMedia{
-          height: 320px;
-        }
-
-        .heroOverlayCard{
-          position: absolute;
-          left: 18px;
-          bottom: 18px;
-          width: min(520px, 58%);
-          background: rgba(255,255,255,.94);
-          border: 1px solid rgba(15,23,42,.10);
-          border-radius: 16px;
-          box-shadow: 0 16px 40px rgba(2,6,23,.22);
-          padding: 16px 16px 14px;
-        }
-
-        .heroBelow{
-          padding-top: 16px;
+          display: grid;
+          grid-template-columns: 1.25fr 0.75fr;
+          gap: 16px;
+          align-items: stretch;
+          padding: 16px;
           background: var(--card);
         }
 
+        .heroMedia{
+          height: auto;
+          min-height: 340px;
+          border-radius: 16px;
+          overflow: hidden;
+        }
+
+        .heroImg{
+          transform: none;
+        }
+
+        .heroOverlayCard{
+          position: static;
+          width: auto;
+          background: rgba(255,255,255,.94);
+          border: 1px solid rgba(15,23,42,.10);
+          border-radius: 16px;
+          box-shadow: 0 16px 40px rgba(2,6,23,.12);
+          padding: 16px;
+          align-self: start;
+        }
+
+        .heroBelow{
+          grid-column: 1 / -1;
+          padding: 14px 0 0;
+          border-top: 1px solid rgba(15,23,42,.10);
+          background: transparent;
+        }
+
         .heroTitle{
-          font-size: 34px;
+          font-size: 32px;
           letter-spacing: -.2px;
         }
       }
 
       @media (min-width: 1300px){
-        .container{max-width: 1360px}
+        .container{max-width: 1200px}
       }
     `}</style>
   );

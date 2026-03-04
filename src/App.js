@@ -1,5 +1,5 @@
 // src/App.js
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -16,6 +16,9 @@ import Zabytek1Img from "./img/Zabytek1.png";
 import Zabytek2Img from "./img/Zabytek2.png";
 import Zabytek3Img from "./img/Zabytek3.png";
 import Zabytek4Img from "./img/Zabytek4.png";
+
+// lokalny film
+import videoTestMp4 from "./Video/VideoTest.mp4";
 
 /* -------------------- THEME (jasne) -------------------- */
 const theme = {
@@ -72,6 +75,7 @@ function toRad(v) {
   return (v * Math.PI) / 180;
 }
 
+// Haversine distance in meters
 function distanceMeters(a, b) {
   const R = 6371000;
   const dLat = toRad(b.lat - a.lat);
@@ -93,8 +97,71 @@ function formatDistance(meters) {
   return `${(meters / 1000).toFixed(2)} km`;
 }
 
+/* -------------------- Icons -------------------- */
+function IconHamburger() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 6h16M4 12h16M4 18h16"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconX() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 6l12 12M18 6L6 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/* -------------------- Hook: lock scroll when open -------------------- */
+function useBodyScrollLock(isLocked) {
+  useEffect(() => {
+    if (!isLocked) return;
+
+    const body = document.body;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
+
+    // avoid "jump" when scrollbar disappears
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = "hidden";
+    if (scrollBarWidth > 0) body.style.paddingRight = `${scrollBarWidth}px`;
+
+    return () => {
+      body.style.overflow = prevOverflow || "";
+      body.style.paddingRight = prevPaddingRight || "";
+    };
+  }, [isLocked]);
+}
+
 /* -------------------- Image fullscreen modal -------------------- */
 function ImageModal({ src, alt, onClose }) {
+  useBodyScrollLock(true);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -108,13 +175,22 @@ function ImageModal({ src, alt, onClose }) {
       className="imgModalBackdrop"
       role="dialog"
       aria-modal="true"
+      aria-label="Podgląd zdjęcia"
       onClick={onClose}
     >
       <div className="imgModalShell" onClick={(e) => e.stopPropagation()}>
         <div className="imgModalHd">
           <div className="imgModalTitle">Podgląd zdjęcia</div>
-          <button className="btn ghost imgClose" onClick={onClose}>
-            Zamknij
+
+          {/* X zawsze widoczny */}
+          <button
+            type="button"
+            className="modalCloseBtn"
+            onClick={onClose}
+            aria-label="Zamknij"
+            title="Zamknij"
+          >
+            <IconX />
           </button>
         </div>
 
@@ -126,21 +202,53 @@ function ImageModal({ src, alt, onClose }) {
   );
 }
 
-/* -------------------- YouTube helper -------------------- */
-function getYouTubeId(url) {
-  try {
-    const u = new URL(url);
-    if (u.hostname.includes("youtu.be"))
-      return u.pathname.replace("/", "").trim();
-    const v = u.searchParams.get("v");
-    if (v) return v.trim();
-    const parts = u.pathname.split("/").filter(Boolean);
-    const embedIdx = parts.indexOf("embed");
-    if (embedIdx >= 0 && parts[embedIdx + 1]) return parts[embedIdx + 1].trim();
-    return "";
-  } catch {
-    return "";
-  }
+/* -------------------- Modal: video in fullscreen (optional) -------------------- */
+function VideoModal({ src, onClose }) {
+  useBodyScrollLock(true);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="imgModalBackdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Odtwarzacz wideo"
+      onClick={onClose}
+    >
+      <div className="videoModalShell" onClick={(e) => e.stopPropagation()}>
+        <div className="imgModalHd">
+          <div className="imgModalTitle">Film</div>
+
+          <button
+            type="button"
+            className="modalCloseBtn"
+            onClick={onClose}
+            aria-label="Zamknij"
+            title="Zamknij"
+          >
+            <IconX />
+          </button>
+        </div>
+
+        <div className="videoModalBd">
+          <video
+            className="videoModalPlayer"
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* -------------------- HERO ARTICLE -------------------- */
@@ -173,32 +281,6 @@ function HeroArticle({
   );
 }
 
-/* -------------------- Icons -------------------- */
-function IconHamburger() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M4 6h16M4 12h16M4 18h16"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-function IconX() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M6 6l12 12M18 6L6 18"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
 /* -------------------- ROOT -------------------- */
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -206,13 +288,12 @@ export default function App() {
   const [loc] = useState(SLUBKI);
   const [points, setPoints] = useState(() => makeRandomRouteAround(SLUBKI, 4));
 
-  const ytUrl = "https://youtu.be/CDdNJNtv8LQ";
-  const ytId = useMemo(() => getYouTubeId(ytUrl), [ytUrl]);
-  const ytEmbed = ytId
-    ? `https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`
-    : "";
-
   const [openImg, setOpenImg] = useState(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+
+  // dodatkowo, jak jest otwarty sidebar (mobile menu) też blokujemy scroll
+  const [menuOpen, setMenuOpen] = useState(false);
+  useBodyScrollLock(menuOpen);
 
   const routeImages = useMemo(
     () => [
@@ -274,13 +355,11 @@ export default function App() {
 
   const tabs = ["Tematy", "Miejsca", "Epoki", "Kontakt"];
   const [activeTab, setActiveTab] = useState("Tematy");
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const onNavigate = (tabName) => {
     setActiveTab(tabName);
     setMenuOpen(false);
 
-    // przykładowa nawigacja: scroll do sekcji
     const idMap = {
       Tematy: "section-tematy",
       Miejsca: "section-miejsca",
@@ -299,6 +378,29 @@ export default function App() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // UX: nie ładuj filmu od razu, dopiero gdy sekcja filmu pojawi się na ekranie
+  const videoWrapRef = useRef(null);
+  const [loadVideo, setLoadVideo] = useState(false);
+
+  useEffect(() => {
+    const el = videoWrapRef.current;
+    if (!el) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first?.isIntersecting) {
+          setLoadVideo(true);
+          obs.disconnect();
+        }
+      },
+      { root: null, threshold: 0.15 }
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <>
       <ThemeStyle />
@@ -307,12 +409,10 @@ export default function App() {
         {/* FIXED HEADER */}
         <header className={`topHeader ${scrolled ? "shadow" : ""}`}>
           <div className="topHeaderInner">
-            {/* LOGO placeholder, podmień na <img src=... /> */}
             <div className="topLogo" aria-label="Logo">
-              LOGO 260x50
+              LOGO 240x50
             </div>
 
-            {/* Desktop tabs */}
             <nav className="topNavDesktop" aria-label="Menu główne">
               {tabs.map((t) => (
                 <button
@@ -326,7 +426,6 @@ export default function App() {
               ))}
             </nav>
 
-            {/* Mobile trigger */}
             <button
               type="button"
               className="topMobileTrigger"
@@ -342,14 +441,12 @@ export default function App() {
           </div>
         </header>
 
-        {/* offcanvas overlay */}
         <div
           className={`topOverlay ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen(false)}
           aria-hidden={!menuOpen}
         />
 
-        {/* offcanvas sidebar */}
         <aside
           className={`topSidebar ${menuOpen ? "open" : ""}`}
           aria-label="Menu boczne"
@@ -382,7 +479,7 @@ export default function App() {
           </div>
         </aside>
 
-        {/* MAPA W TLE ZA HEADER + content poniżej */}
+        {/* MAPA W TLE ZA HEADER */}
         <div className="headerMapBg" aria-hidden="true">
           <MapContainer
             center={center}
@@ -403,7 +500,6 @@ export default function App() {
           <div className="headerMapFade" />
         </div>
 
-        {/* padding-top = 70px (wysokość headera) */}
         <main className="container contentUnderHeader">
           <div className="grid2">
             <div className="leftCol">
@@ -499,6 +595,10 @@ export default function App() {
                       <div className="routeKm">{s.text}</div>
                     </div>
                   ))}
+
+                  {!routeSegments.segs.length && (
+                    <div className="muted">Brak punktów do wyświetlenia.</div>
+                  )}
                 </div>
 
                 <div className="row gap wrap" style={{ marginTop: 10 }}>
@@ -531,7 +631,6 @@ export default function App() {
                       attribution="&copy; OpenStreetMap"
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
-
                     <Polyline positions={polyline} />
 
                     <Marker position={center}>
@@ -610,31 +709,44 @@ export default function App() {
                   <div className="mutedSmall">Materiał o miejscu</div>
                 </div>
 
-                <div className="videoWrap">
-                  {ytEmbed ? (
-                    <iframe
-                      title="Film YouTube"
-                      src={ytEmbed}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                    />
-                  ) : (
-                    <div className="muted">
-                      Nie udało się wczytać linku do filmu.
+                <div className="videoWrap" ref={videoWrapRef}>
+                  {!loadVideo ? (
+                    <div
+                      className="videoPlaceholder"
+                      role="status"
+                      aria-label="Ładowanie filmu"
+                    >
+                      Film ładuje się, przewiń kawałek niżej lub chwilę poczekaj
                     </div>
+                  ) : (
+                    <video
+                      className="videoPlayer"
+                      src={videoTestMp4}
+                      controls
+                      playsInline
+                      preload="metadata"
+                    >
+                      Twoja przeglądarka nie wspiera odtwarzania wideo.
+                    </video>
                   )}
                 </div>
 
                 <div className="row gap wrap" style={{ marginTop: 10 }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setVideoOpen(true)}
+                  >
+                    Otwórz film na pełnym ekranie
+                  </button>
+
                   <a
                     className="btn"
-                    href={ytUrl}
+                    href={videoTestMp4}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Otwórz film w YouTube
+                    Otwórz film w nowej karcie
                   </a>
                 </div>
               </div>
@@ -650,6 +762,10 @@ export default function App() {
             alt={openImg.alt}
             onClose={() => setOpenImg(null)}
           />
+        )}
+
+        {videoOpen && (
+          <VideoModal src={videoTestMp4} onClose={() => setVideoOpen(false)} />
         )}
       </div>
     </>
@@ -722,9 +838,8 @@ function ThemeStyle() {
         gap: 14px;
       }
 
-      /* LOGO */
       .topLogo{
-        width: 260px;
+        width: 240px;
         height: 50px;
         flex: 0 0 auto;
         border-radius: 10px;
@@ -736,9 +851,9 @@ function ThemeStyle() {
         font-weight: 900;
         font-size: 13px;
         color: rgba(11,19,42,.85);
+        white-space: nowrap;
       }
 
-      /* DESKTOP MENU -> PRAWA STRONA */
       .topNavDesktop{
         display: flex;
         align-items: center;
@@ -762,7 +877,6 @@ function ThemeStyle() {
         color: rgba(3,79,189,.95);
       }
 
-      /* MOBILE TRIGGER (hamburger) -> PRAWA STRONA */
       .topMobileTrigger{
         margin-left: auto;
         border: 0;
@@ -780,7 +894,6 @@ function ThemeStyle() {
       .topIcon{display:inline-flex}
       .topMobileLabel{font-size: 13px}
 
-      /* OVERLAY */
       .topOverlay{
         position: fixed;
         inset: 0;
@@ -795,7 +908,6 @@ function ThemeStyle() {
         pointer-events: auto;
       }
 
-      /* SIDEBAR */
       .topSidebar{
         position: fixed;
         top: 0;
@@ -856,10 +968,10 @@ function ThemeStyle() {
         border-color: rgba(3,145,232,.20);
       }
 
-      /* RESPONSYWNOŚĆ */
       @media (max-width: 768px){
         .topNavDesktop{display:none}
         .topMobileTrigger{display:inline-flex}
+        .topLogo{ width: 240px; }
       }
 
       /* ===== MAPA W TLE ZA HEADER ===== */
@@ -892,7 +1004,6 @@ function ThemeStyle() {
         gap: var(--gap);
       }
 
-      /* kluczowe: content pod fixed headerem */
       .contentUnderHeader{
         padding-top: 90px;
       }
@@ -959,11 +1070,7 @@ function ThemeStyle() {
         text-decoration: none;
       }
       .btn:hover{background: rgba(3,145,232,.08)}
-      .btn.ghost{
-        background: rgba(255,255,255,.12);
-        border-color: rgba(255,255,255,.35);
-        color: white;
-      }
+      .btn.btnSmall{ padding: 8px 10px; font-size: 12px }
 
       .mapWrap{
         height: 320px;
@@ -993,6 +1100,11 @@ function ThemeStyle() {
         background:transparent;
         cursor:pointer;
       }
+      .imgBtn:focus{
+        outline: 3px solid rgba(3,145,232,.35);
+        outline-offset: 3px;
+        border-radius: 16px;
+      }
 
       .infoGrid{
         display:grid;
@@ -1009,6 +1121,7 @@ function ThemeStyle() {
       .infoLabel{font-size:12px;color:rgba(11,19,42,.70);font-weight:700;margin-bottom:4px}
       .infoValue{font-size:13px;font-weight:800;color:rgba(11,19,42,.88)}
 
+      /* VIDEO */
       .videoWrap{
         margin-top: 6px;
         border-radius: 14px;
@@ -1017,21 +1130,44 @@ function ThemeStyle() {
         background: #000;
         aspect-ratio: 16 / 9;
         width: 100%;
-      }
-      .videoWrap iframe{
-        width: 100%;
-        height: 100%;
-        border: 0;
-        display:block;
+        display: grid;
+        place-items: center;
       }
 
+      .videoPlayer{
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: 0;
+        background: #000;
+      }
+
+      .videoPlaceholder{
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: rgba(255,255,255,.90);
+        font-weight: 800;
+        font-size: 13px;
+        padding: 14px;
+        text-align: center;
+        background: linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.92));
+      }
+
+      /* Lista przystanków */
       .routeMeta{
         display:flex;
         flex-wrap:wrap;
         gap:8px;
         margin-bottom: 10px;
       }
-      .routeList{display:grid;gap:10px}
+
+      .routeList{
+        display: grid;
+        gap: 10px;
+      }
+
       .routeRow{
         display:grid;
         grid-template-columns: 26px 1fr auto;
@@ -1042,6 +1178,7 @@ function ThemeStyle() {
         border-radius: 14px;
         background: rgba(255,255,255,.78);
       }
+
       .routeIdx{
         width: 26px;
         height: 26px;
@@ -1054,8 +1191,20 @@ function ThemeStyle() {
         background: rgba(3,145,232,.10);
         border: 1px solid rgba(3,145,232,.18);
       }
-      .routeTitle{font-weight:900;font-size:13px;color:rgba(11,19,42,.88);line-height:1.2}
-      .routeArrow{color: rgba(71,85,105,.9); font-weight: 900; padding: 0 4px}
+
+      .routeTitle{
+        font-weight: 900;
+        font-size: 13px;
+        color: rgba(11,19,42,.88);
+        line-height: 1.2;
+      }
+
+      .routeArrow{
+        color: rgba(71,85,105,.9);
+        font-weight: 900;
+        padding: 0 4px;
+      }
+
       .routeKm{
         font-weight: 900;
         font-size: 12px;
@@ -1069,6 +1218,7 @@ function ThemeStyle() {
 
       .footerSpace{height: 14px}
 
+      /* HERO */
       .heroArticle{
         border-radius: var(--radius);
         overflow: hidden;
@@ -1076,12 +1226,14 @@ function ThemeStyle() {
         box-shadow: var(--shadow);
         background: var(--card);
       }
+
       .heroMedia{
         position: relative;
         max-height: 340px;
         overflow: hidden;
         border-radius: 16px;
       }
+
       .heroImg{
         width: 100%;
         height: auto;
@@ -1089,6 +1241,7 @@ function ThemeStyle() {
         object-fit: cover;
         display: block;
       }
+
       .heroGradient{
         position: absolute;
         inset: 0;
@@ -1119,6 +1272,7 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
+      /* FULLSCREEN MODALS */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -1127,12 +1281,21 @@ function ThemeStyle() {
         display: grid;
         padding: 0;
       }
+
       .imgModalShell{
         width: 100%;
         height: 100%;
         display: grid;
         grid-template-rows: auto 1fr;
       }
+
+      .videoModalShell{
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
       .imgModalHd{
         display:flex;
         align-items:center;
@@ -1142,11 +1305,31 @@ function ThemeStyle() {
         background: rgba(0,0,0,.88);
         border-bottom: 1px solid rgba(255,255,255,.12);
       }
+
       .imgModalTitle{
         font-weight: 900;
         color: rgba(255,255,255,.94);
         font-size: 13px;
       }
+
+      .modalCloseBtn{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,.22);
+        background: rgba(255,255,255,.10);
+        color: rgba(255,255,255,.95);
+        cursor: pointer;
+      }
+      .modalCloseBtn:hover{background: rgba(255,255,255,.16)}
+      .modalCloseBtn:focus{
+        outline: 3px solid rgba(3,145,232,.45);
+        outline-offset: 2px;
+      }
+
       .imgModalBd{
         display:flex;
         align-items:center;
@@ -1154,6 +1337,7 @@ function ThemeStyle() {
         padding: 10px;
         overflow: hidden;
       }
+
       .imgFull{
         max-width: 90vw;
         max-height: 90vh;
@@ -1162,6 +1346,24 @@ function ThemeStyle() {
         object-fit: contain;
         border-radius: 16px;
         display:block;
+      }
+
+      .videoModalBd{
+        padding: 10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .videoModalPlayer{
+        width: min(1100px, 92vw);
+        height: auto;
+        max-height: 82vh;
+        border-radius: 16px;
+        background: #000;
+      }
+
+      @media (max-width: 480px){
+        .modalCloseBtn{ width: 44px; height: 44px; }
       }
 
       @media (max-width: 360px){
@@ -1173,6 +1375,7 @@ function ThemeStyle() {
 
       @media (min-width: 980px){
         .container{max-width: 1100px;margin:0 auto}
+
         .heroArticle{
           display: grid;
           grid-template-columns: 1.25fr 0.75fr;
@@ -1181,13 +1384,14 @@ function ThemeStyle() {
           padding: 16px;
           background: var(--card);
         }
+
         .heroMedia{
           height: auto;
           min-height: 340px;
           border-radius: 16px;
           overflow: hidden;
         }
-        .heroImg{transform:none}
+
         .heroOverlayCard{
           background: rgba(255,255,255,.94);
           border: 1px solid rgba(15,23,42,.10);
@@ -1196,12 +1400,14 @@ function ThemeStyle() {
           padding: 16px;
           align-self: start;
         }
+
         .heroBelow{
           grid-column: 1 / -1;
           padding: 14px 0 0;
           border-top: 1px solid rgba(15,23,42,.10);
           background: transparent;
         }
+
         .heroTitle{font-size: 32px}
       }
     `}</style>

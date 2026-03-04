@@ -273,10 +273,11 @@ export default function App() {
                 </div>
 
                 <p className="p">
-                  Blee Bllee NEw Test Znajdujesz się przy charakterystycznych
-                  dębach, które od lat są punktem orientacyjnym dla okolicznych
-                  mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu
-                  i przygotować do kolejnych przystanków na trasie.
+                  To jest test publikacji Znajdujesz się przy
+                  charakterystycznych dębach, które od lat są punktem
+                  orientacyjnym dla okolicznych mieszkańców. To dobry moment,
+                  żeby rozejrzeć się po otoczeniu i przygotować do kolejnych
+                  przystanków na trasie.
                 </p>
 
                 <div className="gallery">

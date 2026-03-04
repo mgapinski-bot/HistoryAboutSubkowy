@@ -136,8 +136,32 @@ function IconX() {
   );
 }
 
+/* -------------------- Hook: lock scroll when open -------------------- */
+function useBodyScrollLock(isLocked) {
+  useEffect(() => {
+    if (!isLocked) return;
+
+    const body = document.body;
+    const prevOverflow = body.style.overflow;
+    const prevPaddingRight = body.style.paddingRight;
+
+    // avoid "jump" when scrollbar disappears
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    body.style.overflow = "hidden";
+    if (scrollBarWidth > 0) body.style.paddingRight = `${scrollBarWidth}px`;
+
+    return () => {
+      body.style.overflow = prevOverflow || "";
+      body.style.paddingRight = prevPaddingRight || "";
+    };
+  }, [isLocked]);
+}
+
 /* -------------------- Image fullscreen modal -------------------- */
 function ImageModal({ src, alt, onClose }) {
+  useBodyScrollLock(true);
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -158,10 +182,10 @@ function ImageModal({ src, alt, onClose }) {
         <div className="imgModalHd">
           <div className="imgModalTitle">Podgląd zdjęcia</div>
 
-          {/* zawsze widoczny X, desktop i mobile */}
+          {/* X zawsze widoczny */}
           <button
             type="button"
-            className="imgCloseBtn"
+            className="modalCloseBtn"
             onClick={onClose}
             aria-label="Zamknij"
             title="Zamknij"
@@ -172,6 +196,55 @@ function ImageModal({ src, alt, onClose }) {
 
         <div className="imgModalBd">
           <img className="imgFull" src={src} alt={alt || "Zdjęcie"} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* -------------------- Modal: video in fullscreen (optional) -------------------- */
+function VideoModal({ src, onClose }) {
+  useBodyScrollLock(true);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="imgModalBackdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Odtwarzacz wideo"
+      onClick={onClose}
+    >
+      <div className="videoModalShell" onClick={(e) => e.stopPropagation()}>
+        <div className="imgModalHd">
+          <div className="imgModalTitle">Film</div>
+
+          <button
+            type="button"
+            className="modalCloseBtn"
+            onClick={onClose}
+            aria-label="Zamknij"
+            title="Zamknij"
+          >
+            <IconX />
+          </button>
+        </div>
+
+        <div className="videoModalBd">
+          <video
+            className="videoModalPlayer"
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+          />
         </div>
       </div>
     </div>
@@ -216,6 +289,11 @@ export default function App() {
   const [points, setPoints] = useState(() => makeRandomRouteAround(SLUBKI, 4));
 
   const [openImg, setOpenImg] = useState(null);
+  const [videoOpen, setVideoOpen] = useState(false);
+
+  // dodatkowo, jak jest otwarty sidebar (mobile menu) też blokujemy scroll
+  const [menuOpen, setMenuOpen] = useState(false);
+  useBodyScrollLock(menuOpen);
 
   const routeImages = useMemo(
     () => [
@@ -246,7 +324,6 @@ export default function App() {
     [center, points]
   );
 
-  // lista odcinków trasy: Start -> P1 -> P2 -> ...
   const routeSegments = useMemo(() => {
     const nodes = [
       { id: "start", title: "Subkowy, start", lat: loc.lat, lng: loc.lng },
@@ -278,7 +355,6 @@ export default function App() {
 
   const tabs = ["Tematy", "Miejsca", "Epoki", "Kontakt"];
   const [activeTab, setActiveTab] = useState("Tematy");
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const onNavigate = (tabName) => {
     setActiveTab(tabName);
@@ -656,6 +732,14 @@ export default function App() {
                 </div>
 
                 <div className="row gap wrap" style={{ marginTop: 10 }}>
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={() => setVideoOpen(true)}
+                  >
+                    Otwórz film na pełnym ekranie
+                  </button>
+
                   <a
                     className="btn"
                     href={videoTestMp4}
@@ -678,6 +762,10 @@ export default function App() {
             alt={openImg.alt}
             onClose={() => setOpenImg(null)}
           />
+        )}
+
+        {videoOpen && (
+          <VideoModal src={videoTestMp4} onClose={() => setVideoOpen(false)} />
         )}
       </div>
     </>
@@ -1184,7 +1272,7 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
-      /* FULLSCREEN IMAGE */
+      /* FULLSCREEN MODALS */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -1195,6 +1283,13 @@ function ThemeStyle() {
       }
 
       .imgModalShell{
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+
+      .videoModalShell{
         width: 100%;
         height: 100%;
         display: grid;
@@ -1217,7 +1312,7 @@ function ThemeStyle() {
         font-size: 13px;
       }
 
-      .imgCloseBtn{
+      .modalCloseBtn{
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -1229,8 +1324,8 @@ function ThemeStyle() {
         color: rgba(255,255,255,.95);
         cursor: pointer;
       }
-      .imgCloseBtn:hover{background: rgba(255,255,255,.16)}
-      .imgCloseBtn:focus{
+      .modalCloseBtn:hover{background: rgba(255,255,255,.16)}
+      .modalCloseBtn:focus{
         outline: 3px solid rgba(3,145,232,.45);
         outline-offset: 2px;
       }
@@ -1253,8 +1348,22 @@ function ThemeStyle() {
         display:block;
       }
 
+      .videoModalBd{
+        padding: 10px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .videoModalPlayer{
+        width: min(1100px, 92vw);
+        height: auto;
+        max-height: 82vh;
+        border-radius: 16px;
+        background: #000;
+      }
+
       @media (max-width: 480px){
-        .imgCloseBtn{ width: 44px; height: 44px; }
+        .modalCloseBtn{ width: 44px; height: 44px; }
       }
 
       @media (max-width: 360px){

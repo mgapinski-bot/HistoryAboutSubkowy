@@ -422,19 +422,17 @@ function ContactModal({ onClose }) {
       aria-label="Kontakt"
       onClick={onClose}
     >
-      <div className="contactModalShell" onClick={(e) => e.stopPropagation()}>
-        <div className="contactHero">
-          <div className="contactHeroInner">
-            <div className="contactHeroTitle">Kontakt</div>
-            <div className="contactHeroSub">
-              Wybierz odpowiedni kontakt, merytoryczny lub w sprawie działania
-              aplikacji.
-            </div>
-          </div>
+      {/* używamy tej samej konstrukcji co ImageModal */}
+      <div
+        className="imgModalShell contactShell"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="imgModalHd">
+          <div className="imgModalTitle">Kontakt</div>
 
           <button
             type="button"
-            className="modalCloseBtn contactCloseBtn"
+            className="modalCloseBtn"
             onClick={onClose}
             aria-label="Zamknij"
             title="Zamknij"
@@ -443,85 +441,59 @@ function ContactModal({ onClose }) {
           </button>
         </div>
 
-        <div className="contactBody">
-          <div className="contactGrid">
-            <div className="contactCard">
-              <div className="contactCardIcon" aria-hidden="true">
-                <IconInfo />
-              </div>
-              <div className="contactCardTitle">Kontakt merytoryczny</div>
-              <div className="contactCardDesc">
-                Pytania o treści historyczne, przystanki, opisy, źródła.
-              </div>
-
-              <div className="contactLines">
-                <a className="contactLine" href="mailto:kontakt@twojadomena.pl">
-                  <span className="contactLineIcon" aria-hidden="true">
-                    <IconMail />
-                  </span>
-                  <span className="contactLineMain">
-                    <span className="contactLineLabel">Email</span>
-                    <span className="contactLineValue">
-                      kontakt@twojadomena.pl
-                    </span>
-                  </span>
-                </a>
-
-                <a className="contactLine" href="tel:+48123123123">
-                  <span className="contactLineIcon" aria-hidden="true">
-                    <IconPhone />
-                  </span>
-                  <span className="contactLineMain">
-                    <span className="contactLineLabel">Telefon</span>
-                    <span className="contactLineValue">+48 123 123 123</span>
-                  </span>
-                </a>
-              </div>
-
-              <div className="contactNote">Godziny: pon, pt 9:00–16:00</div>
+        <div className="imgModalBd contactBd">
+          <div className="contactPanel">
+            <div className="contactLead">
+              Wybierz właściwy kontakt, merytoryczny lub techniczny.
             </div>
 
-            <div className="contactCard">
-              <div className="contactCardIcon app" aria-hidden="true">
-                <IconMail />
-              </div>
-              <div className="contactCardTitle">
-                Kontakt w sprawie aplikacji
-              </div>
-              <div className="contactCardDesc">
-                Problemy techniczne, błędy, sugestie, wsparcie użytkownika.
-              </div>
+            <div className="contactGrid">
+              <div className="contactMiniCard">
+                <div className="contactMiniTitle">Kontakt merytoryczny</div>
 
-              <div className="contactLines">
-                <a className="contactLine" href="mailto:support@twojadomena.pl">
-                  <span className="contactLineIcon" aria-hidden="true">
-                    <IconMail />
-                  </span>
-                  <span className="contactLineMain">
-                    <span className="contactLineLabel">Email</span>
-                    <span className="contactLineValue">
-                      support@twojadomena.pl
-                    </span>
-                  </span>
+                <div className="contactMiniRow">
+                  <div className="contactMiniLabel">Imię</div>
+                  <div className="contactMiniValue">Jan Kowalski</div>
+                </div>
+
+                <a className="contactMiniRow link" href="tel:+48123123123">
+                  <div className="contactMiniLabel">Telefon</div>
+                  <div className="contactMiniValue">+48 123 123 123</div>
                 </a>
 
-                <a className="contactLine" href="tel:+48555111222">
-                  <span className="contactLineIcon" aria-hidden="true">
-                    <IconPhone />
-                  </span>
-                  <span className="contactLineMain">
-                    <span className="contactLineLabel">Telefon</span>
-                    <span className="contactLineValue">+48 555 111 222</span>
-                  </span>
+                <a
+                  className="contactMiniRow link"
+                  href="mailto:kontakt@twojadomena.pl"
+                >
+                  <div className="contactMiniLabel">Email</div>
+                  <div className="contactMiniValue">kontakt@twojadomena.pl</div>
                 </a>
               </div>
 
-              <div className="contactNote">Odpowiedź zwykle w 24–48h</div>
+              <div className="contactMiniCard">
+                <div className="contactMiniTitle">Kontakt techniczny</div>
+
+                <div className="contactMiniRow">
+                  <div className="contactMiniLabel">Imię</div>
+                  <div className="contactMiniValue">Support Team</div>
+                </div>
+
+                <a className="contactMiniRow link" href="tel:+48555111222">
+                  <div className="contactMiniLabel">Telefon</div>
+                  <div className="contactMiniValue">+48 555 111 222</div>
+                </a>
+
+                <a
+                  className="contactMiniRow link"
+                  href="mailto:support@twojadomena.pl"
+                >
+                  <div className="contactMiniLabel">Email</div>
+                  <div className="contactMiniValue">support@twojadomena.pl</div>
+                </a>
+              </div>
             </div>
-          </div>
 
-          <div className="contactFooterHint">
-            Kliknij poza oknem, aby zamknąć.
+            <div className="contactHint">Kliknij poza oknem, aby zamknąć.</div>
           </div>
         </div>
       </div>
@@ -1890,12 +1862,129 @@ function ThemeStyle() {
         border-radius: 16px;
         background: #000;
       }
+      /* ===== CONTACT, ten sam layout modala co zdjęcia ===== */
+
+/* zwężamy samo okno (shell), header zostaje na całą szerokość okna */
+.contactShell{
+  width: min(760px, 92vw);
+  height: auto;
+  max-height: 92vh;
+  margin: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* body kontaktu ma zachowywać się jak podgląd zdjęcia: center + scroll */
+.contactBd{
+  width: 100%;
+  padding: 12px;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+}
+
+/* panel z treścią, jak "zdjęcie" - ograniczona szerokość */
+.contactPanel{
+  width: min(620px, 90vw);
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 16px;
+  box-shadow: 0 18px 46px rgba(2,6,23,.22);
+  padding: 14px;
+}
+
+/* krótkie intro */
+.contactLead{
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(71,85,105,.92);
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+/* 2 kolumny desktop, 1 kolumna mobile */
+.contactGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 760px){
+  .contactGrid{ grid-template-columns: 1fr; }
+}
+
+/* małe karty, bez “wielkich boxów” */
+.contactMiniCard{
+  border: 1px solid rgba(3,79,189,.14);
+  background: rgba(247,251,255,.70);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.contactMiniTitle{
+  font-weight: 950;
+  font-size: 13px;
+  color: rgba(3,79,189,.95);
+  margin-bottom: 8px;
+}
+
+/* wiersze danych: label + value */
+.contactMiniRow{
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.86);
+  text-decoration: none;
+  color: inherit;
+  margin-top: 8px;
+}
+
+.contactMiniRow.link:hover{
+  background: rgba(3,145,232,.08);
+  border-color: rgba(3,145,232,.22);
+}
+
+.contactMiniLabel{
+  font-size: 11px;
+  font-weight: 850;
+  color: rgba(71,85,105,.90);
+}
+
+.contactMiniValue{
+  font-size: 13px;
+  font-weight: 950;
+  color: rgba(11,19,42,.92);
+  word-break: break-word;
+}
+
+.contactHint{
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 750;
+  color: rgba(71,85,105,.80);
+  text-align: center;
+}
 
       /* ===== CONTACT MODAL (layout jak w przykładzie) ===== */
+      .imgModalBackdrop{
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.92);
+        z-index: 9000;
+        display: grid;
+        padding: clamp(12px, 3vh, 28px) clamp(12px, 3vw, 28px);
+      }
+      
       .contactModalShell{
         width: min(980px, 94vw);
+        max-height: calc(100vh - (clamp(12px, 3vh, 28px) * 2));
         margin: auto;
-        border-radius: 18px;
+        border-radius: 16px;
         overflow: hidden;
         background: #ffffff;
         box-shadow: 0 24px 60px rgba(2,6,23,.35);
@@ -1903,52 +1992,52 @@ function ThemeStyle() {
         display: grid;
         grid-template-rows: auto 1fr;
       }
-
-      .contactHero{
-        position: relative;
-        padding: 18px 18px 16px;
-        background:
-          radial-gradient(700px 260px at 15% 0%, rgba(3,145,232,.22), transparent 60%),
-          radial-gradient(700px 260px at 85% 10%, rgba(34,197,94,.16), transparent 60%),
-          linear-gradient(180deg, rgba(3,79,189,.92), rgba(3,79,189,.78));
-        color: rgba(255,255,255,.96);
+      
+      .contactModalHd{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        padding: 12px 14px;
+        background: rgba(0,0,0,.88);
+        border-bottom: 1px solid rgba(255,255,255,.12);
       }
-
-      .contactHeroInner{
-        max-width: 760px;
-      }
-
-      .contactHeroTitle{
-        font-weight: 950;
-        font-size: 22px;
-        letter-spacing: .2px;
-      }
-
-      .contactHeroSub{
-        margin-top: 6px;
-        font-weight: 700;
+      
+      .contactModalTitle{
+        font-weight: 900;
+        color: rgba(255,255,255,.94);
         font-size: 13px;
-        color: rgba(255,255,255,.92);
+      }
+      
+      .contactModalBd{
+        padding: 14px;
+        overflow: auto;
+        background:
+          radial-gradient(700px 260px at 15% 0%, rgba(3,145,232,.10), transparent 60%),
+          radial-gradient(700px 260px at 85% 10%, rgba(34,197,94,.08), transparent 60%),
+          linear-gradient(180deg, rgba(247,251,255,1), rgba(255,255,255,1));
+      }
+      
+      .contactIntro{
+        font-size: 13px;
+        font-weight: 750;
+        color: rgba(71,85,105,.92);
         line-height: 1.35;
+        margin-bottom: 12px;
       }
-
-      .contactCloseBtn{
-        position: absolute;
-        right: 12px;
-        top: 12px;
-      }
-
-      .contactBody{
-        padding: 16px;
-        background: linear-gradient(180deg, rgba(247,251,255,1), rgba(255,255,255,1));
-      }
-
+      
       .contactGrid{
         display: grid;
         gap: 14px;
         grid-template-columns: 1fr 1fr;
       }
-
+      
+      @media (max-width: 820px){
+        .contactGrid{ grid-template-columns: 1fr; }
+        .contactModalShell{ width: min(640px, 94vw); }
+      }
+      
+      /* karty */
       .contactCard{
         background: rgba(255,255,255,.92);
         border: 1px solid rgba(3,79,189,.14);
@@ -1956,7 +2045,15 @@ function ThemeStyle() {
         box-shadow: 0 12px 28px rgba(2,6,23,.08);
         padding: 14px;
       }
-
+      
+      .contactCardTop{
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 10px;
+        align-items: start;
+        margin-bottom: 10px;
+      }
+      
       .contactCardIcon{
         width: 44px;
         height: 44px;
@@ -1966,34 +2063,33 @@ function ThemeStyle() {
         background: rgba(3,145,232,.12);
         color: rgba(3,79,189,.95);
         border: 1px solid rgba(3,145,232,.20);
-        margin-bottom: 10px;
       }
+      
       .contactCardIcon.app{
         background: rgba(34,197,94,.12);
         color: rgba(16,185,129,.98);
         border-color: rgba(34,197,94,.22);
       }
-
+      
       .contactCardTitle{
         font-weight: 950;
         color: rgba(11,19,42,.92);
         font-size: 14px;
         margin-bottom: 4px;
       }
-
+      
       .contactCardDesc{
         color: rgba(71,85,105,.90);
         font-weight: 650;
         font-size: 12px;
         line-height: 1.35;
-        margin-bottom: 12px;
       }
-
+      
       .contactLines{
         display: grid;
         gap: 10px;
       }
-
+      
       .contactLine{
         text-decoration: none;
         display: grid;
@@ -2006,11 +2102,12 @@ function ThemeStyle() {
         background: rgba(255,255,255,.86);
         color: rgba(11,19,42,.90);
       }
+      
       .contactLine:hover{
         background: rgba(3,145,232,.08);
         border-color: rgba(3,145,232,.22);
       }
-
+      
       .contactLineIcon{
         width: 42px;
         height: 42px;
@@ -2021,7 +2118,7 @@ function ThemeStyle() {
         color: rgba(3,79,189,.95);
         border: 1px solid rgba(3,79,189,.14);
       }
-
+      
       .contactLineLabel{
         display: block;
         font-size: 11px;
@@ -2029,7 +2126,7 @@ function ThemeStyle() {
         color: rgba(71,85,105,.92);
         margin-bottom: 2px;
       }
-
+      
       .contactLineValue{
         display: block;
         font-size: 13px;
@@ -2038,14 +2135,14 @@ function ThemeStyle() {
         line-height: 1.1;
         word-break: break-word;
       }
-
+      
       .contactNote{
         margin-top: 10px;
         font-size: 12px;
         font-weight: 750;
         color: rgba(71,85,105,.92);
       }
-
+      
       .contactFooterHint{
         margin-top: 12px;
         font-size: 12px;

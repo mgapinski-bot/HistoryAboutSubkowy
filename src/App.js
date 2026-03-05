@@ -15,6 +15,7 @@ import UnderConstruction from "./Pages/UnderConstruction";
 import WorldWindow from "./Pages/WorldWindow";
 
 import twoOaksImg from "./img/two-oaks.png";
+import twoOaks2Img from "./img/2oaks.png";
 import Zabytek1Img from "./img/Zabytek1.png";
 import Zabytek2Img from "./img/Zabytek2.png";
 import Zabytek3Img from "./img/Zabytek3.png";
@@ -521,6 +522,7 @@ function HomeLayout() {
 
   // ✅ TYLKO JEDNA deklaracja navigate
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openImg, setOpenImg] = useState(null);
   const [videoOpen, setVideoOpen] = useState(false);
@@ -584,6 +586,25 @@ function HomeLayout() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const scrollTo = location.state?.scrollTo;
+    if (!scrollTo) return;
+
+    // zamknij rzeczy, żeby nie zasłaniały scrolla
+    setMenuOpen(false);
+    setTimelineOpen(false);
+
+    if (scrollTo === "section-kontakt") {
+      setContactOpen(true);
+    } else {
+      const el = document.getElementById(scrollTo);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // wyczyść state, żeby po odświeżeniu nie scrollowało znowu
+    window.history.replaceState({}, document.title);
+  }, [location.state]);
 
   const center = useMemo(() => [loc.lat, loc.lng], [loc.lat, loc.lng]);
   const polyline = useMemo(

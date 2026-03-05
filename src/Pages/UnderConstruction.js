@@ -1,5 +1,6 @@
 // src/UnderConstruction.js
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* -------------------- THEME (jasne) -------------------- */
 const theme = {
@@ -88,6 +89,70 @@ function useBodyScrollLock(isLocked) {
     const body = document.body;
     const prevOverflow = body.style.overflow;
     const prevPaddingRight = body.style.paddingRight;
+    const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState("");
+    const [timelineOpen, setTimelineOpen] = useState(false);
+    const timelineWrapRef = useRef(null);
+
+    const timelineItems = useMemo(
+      () => [
+        "Okno na Świat, Odzyskanie Niepodległości",
+        "Marzenie, Leonid Teliga",
+        "Sobek, Legendarny Założyciel",
+        "Wejście do Grodu Kerin, Grecja i Początki Europy",
+        "Rzym, Koloseum i Gladiatorzy",
+        "Słowianie i Wikingowie, Narodziny Polski",
+        "Św. Wojciech, Patron i Misjonarz",
+        "Odwaga, Pomnik Młodzieży",
+      ],
+      []
+    );
+
+    // zamykaj dropdown klikając poza nim
+    useEffect(() => {
+      const onDown = (e) => {
+        if (!timelineOpen) return;
+        const el = timelineWrapRef.current;
+        if (!el) return;
+        if (el.contains(e.target)) return;
+        setTimelineOpen(false);
+      };
+      window.addEventListener("mousedown", onDown);
+      return () => window.removeEventListener("mousedown", onDown);
+    }, [timelineOpen]);
+
+    const onPickTimelineItem = (label) => {
+      setTimelineOpen(false);
+      setMenuOpen(false);
+      setActiveTab("Ścieżka czasu");
+
+      if (label === "Okno na Świat, Odzyskanie Niepodległości") {
+        navigate("/WorldWindow");
+      } else {
+        navigate("/UnderConstruction");
+      }
+    };
+
+    const onNavigate = (tabName) => {
+      if (tabName === "Ścieżka czasu") {
+        setTimelineOpen((v) => !v);
+        setMenuOpen(false);
+        return;
+      }
+
+      setActiveTab(tabName);
+      setTimelineOpen(false);
+      setMenuOpen(false);
+
+      const idMap = {
+        Miejsca: "section-miejsca",
+        Epoki: "section-epoki",
+        Kontakt: "section-kontakt",
+      };
+
+      navigate("/", { state: { scrollTo: idMap[tabName] } });
+    };
 
     const scrollBarWidth =
       window.innerWidth - document.documentElement.clientWidth;
@@ -202,13 +267,51 @@ export default function UnderConstruction() {
 
             <nav className="topNavDesktop" aria-label="Menu główne">
               <div className="navDropWrap" ref={timelineWrapRef}>
-                <button type="button" className="topTab topTabDrop" disabled>
+                <button
+                  type="button"
+                  className={`topTab topTabDrop ${
+                    activeTab === "Ścieżka czasu" || timelineOpen
+                      ? "active"
+                      : ""
+                  }`}
+                  aria-haspopup="menu"
+                  aria-expanded={timelineOpen}
+                  onClick={() => onNavigate("Ścieżka czasu")}
+                >
                   <span>Ścieżka czasu</span>
                 </button>
+
+                {timelineOpen && (
+                  <div
+                    className="navDropdown"
+                    role="menu"
+                    aria-label="Ścieżka czasu"
+                  >
+                    <div className="navDropdownArrow" aria-hidden="true" />
+                    <div className="navDropdownGrid">
+                      {timelineItems.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className="navDropdownItem"
+                          role="menuitem"
+                          onClick={() => onPickTimelineItem(t)}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {["Miejsca", "Epoki", "Kontakt"].map((t) => (
-                <button key={t} type="button" className="topTab" disabled>
+                <button
+                  key={t}
+                  type="button"
+                  className={`topTab ${activeTab === t ? "active" : ""}`}
+                  onClick={() => onNavigate(t)}
+                >
                   {t}
                 </button>
               ))}
@@ -240,16 +343,47 @@ export default function UnderConstruction() {
           aria-label="Menu boczne"
           aria-hidden={!menuOpen}
         >
-          <div className="topSidebarHeader">
-            <div className="topSidebarTitle">Menu</div>
+          <div className="topSidebarList" role="list">
             <button
               type="button"
-              className="topSidebarClose"
-              onClick={() => setMenuOpen(false)}
-              aria-label="Zamknij menu"
+              className="topSidebarItem"
+              onClick={() => setTimelineOpen((v) => !v)}
+              role="listitem"
+              aria-expanded={timelineOpen}
             >
-              <IconX />
+              Ścieżka czasu
             </button>
+
+            {timelineOpen && (
+              <div className="sideSubMenu" role="list">
+                {timelineItems.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className="sideSubItem"
+                    onClick={() => {
+                      onPickTimelineItem(t);
+                      setMenuOpen(false);
+                    }}
+                    role="listitem"
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {["Miejsca", "Epoki", "Kontakt"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                className="topSidebarItem"
+                onClick={() => onNavigate(t)}
+                role="listitem"
+              >
+                {t}
+              </button>
+            ))}
           </div>
 
           <div className="topSidebarList" role="list">

@@ -408,7 +408,7 @@ export default function App() {
   const opisBody =
     "Znajdujesz się przy charakterystycznych dębach, które od lat są punktem orientacyjnym dla okolicznych mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu i przygotować do kolejnych przystanków na trasie.";
 
-  const tabs = ["Tematy", "Miejsca", "Epoki", "Kontakt"];
+  const tabs = ["Ścieżka czasu", "Miejsca", "Epoki", "Kontakt"];
   const [activeTab, setActiveTab] = useState("Tematy");
 
   const onNavigate = (tabName) => {
@@ -416,7 +416,7 @@ export default function App() {
     setMenuOpen(false);
 
     const idMap = {
-      Tematy: "section-tematy",
+      "Ścieżka czasu": "section-tematy",
       Miejsca: "section-miejsca",
       Epoki: "section-epoki",
       Kontakt: "section-kontakt",

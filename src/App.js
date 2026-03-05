@@ -17,7 +17,6 @@ import Zabytek2Img from "./img/Zabytek2.png";
 import Zabytek3Img from "./img/Zabytek3.png";
 import Zabytek4Img from "./img/Zabytek4.png";
 
-// lokalny film
 import videoTestMp4 from "./Video/VideoTest.mp4";
 
 /* -------------------- THEME (jasne) -------------------- */
@@ -75,7 +74,6 @@ function toRad(v) {
   return (v * Math.PI) / 180;
 }
 
-// Haversine distance in meters
 function distanceMeters(a, b) {
   const R = 6371000;
   const dLat = toRad(b.lat - a.lat);
@@ -171,6 +169,48 @@ function useHeaderBehindModal(isOn) {
       header.style.zIndex = prevZ || "";
     };
   }, [isOn]);
+}
+
+/* -------------------- Pill label helpers -------------------- */
+function hexToRgb(hex) {
+  const h = (hex || "").replace("#", "").trim();
+  if (h.length !== 6) return { r: 0, g: 0, b: 0 };
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function relativeLuminance({ r, g, b }) {
+  const srgb = [r, g, b]
+    .map((v) => v / 255)
+    .map((c) =>
+      c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
+    );
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+}
+
+function contrastTextColor(bgHex) {
+  const lum = relativeLuminance(hexToRgb(bgHex));
+  return lum > 0.55 ? "rgba(11,19,42,.92)" : "rgba(255,255,255,.96)";
+}
+
+const pillVariants = {
+  miejsca: "#f2b705",
+  lista: "#0ea5e9",
+  mapa: "#2563eb",
+  film: "#10b981",
+};
+
+function CardPillLabel({ text, variant = "miejsca" }) {
+  const bg = pillVariants[variant] || pillVariants.miejsca;
+  const fg = contrastTextColor(bg);
+
+  return (
+    <div className="cardPill" style={{ background: bg, color: fg }}>
+      {text}
+    </div>
+  );
 }
 
 /* -------------------- Image fullscreen modal -------------------- */
@@ -415,6 +455,7 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  // usuwamy headerowe tytuły wewnątrz kart, a wysokości trzymamy przez grid / mapWrap / videoWrap
   return (
     <>
       <ThemeStyle />
@@ -515,7 +556,9 @@ export default function App() {
         <main className="container contentUnderHeader">
           <div className="grid2">
             <div className="leftCol">
-              <div className="card" id="section-tematy">
+              <div className="card cardLabeled" id="section-tematy">
+                <CardPillLabel text="Miejsca" variant="miejsca" />
+
                 <h1 className="h1">{welcome}</h1>
 
                 <div className="statusRow">
@@ -577,13 +620,10 @@ export default function App() {
                 }
               />
 
-              <div className="card" id="section-epoki">
-                <div className="cardHd">
-                  <div className="cardTitle">Lista przystanków</div>
-                  <div className="mutedSmall">Odległości między punktami</div>
-                </div>
+              <div className="card cardLabeled" id="section-epoki">
+                <CardPillLabel text="Lista Przystanków" variant="lista" />
 
-                <div className="routeMeta">
+                <div className="routeMeta" style={{ marginTop: 2 }}>
                   <span className="pill">
                     Łącznie: <strong>{routeSegments.totalText}</strong>
                   </span>
@@ -625,15 +665,10 @@ export default function App() {
             </div>
 
             <div className="rightSticky" id="section-miejsca">
-              <div className="card">
-                <div className="cardHd">
-                  <div className="cardTitle">Mapa trasy</div>
-                  <div className="mutedSmall">
-                    Start Subkowy i kolejne punkty
-                  </div>
-                </div>
+              <div className="card cardLabeled">
+                <CardPillLabel text="Mapa trasy" variant="mapa" />
 
-                <div className="mapWrap">
+                <div className="mapWrap" style={{ marginTop: 6 }}>
                   <MapContainer
                     center={center}
                     zoom={15}
@@ -715,13 +750,14 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="card" id="section-kontakt">
-                <div className="cardHd">
-                  <div className="cardTitle">Film</div>
-                  <div className="mutedSmall">Materiał o miejscu</div>
-                </div>
+              <div className="card cardLabeled" id="section-kontakt">
+                <CardPillLabel text="Film" variant="film" />
 
-                <div className="videoWrap" ref={videoWrapRef}>
+                <div
+                  className="videoWrap"
+                  ref={videoWrapRef}
+                  style={{ marginTop: 6 }}
+                >
                   {!loadVideo ? (
                     <div
                       className="videoPlaceholder"
@@ -1042,16 +1078,40 @@ function ThemeStyle() {
         padding: 12px var(--pad) 14px;
       }
 
-      .cardHd{
-        display:flex;
-        align-items:baseline;
-        justify-content:space-between;
-        gap:10px;
-        margin-bottom: 6px;
+      /* ===== PILL LABEL ON CARD ===== */
+      .cardLabeled{
+        position: relative;
+        padding-top: 26px;
       }
-      .cardTitle{font-weight:800; color: var(--blue1)}
-      .mutedSmall{font-size:12px;color:var(--muted)}
-      .muted{color:var(--muted)}
+
+      .cardPill{
+        position: absolute;
+        left: var(--pad);
+        top: 0;
+        transform: translateY(-50%);
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        max-width: calc(100% - (var(--pad) * 2));
+        padding: 7px 20px;
+        border-radius: 4px;
+        font-weight: 950;
+        font-size: 12px;
+        letter-spacing: .2px;
+        box-shadow: 0 12px 26px rgba(2,6,23,.18);
+        border: 1px solid rgba(2,6,23,.10);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      @media (max-width: 420px){
+        .cardPill{
+          white-space: normal;
+          line-height: 1.15;
+          max-width: calc(100% - (var(--pad) * 2));
+        }
+      }
 
       .h1{font-size:18px;margin:0 0 10px;line-height:1.25}
 
@@ -1389,39 +1449,6 @@ function ThemeStyle() {
 
       @media (min-width: 980px){
         .container{max-width: 1100px;margin:0 auto}
-
-        .heroArticle{
-          display: grid;
-          grid-template-columns: 1.25fr 0.75fr;
-          gap: 16px;
-          align-items: stretch;
-          padding: 16px;
-          background: var(--card);
-        }
-
-        .heroMedia{
-          height: auto;
-          min-height: 340px;
-          border-radius: 16px;
-          overflow: hidden;
-        }
-
-        .heroOverlayCard{
-          background: rgba(255,255,255,.94);
-          border: 1px solid rgba(15,23,42,.10);
-          border-radius: 16px;
-          box-shadow: 0 16px 40px rgba(2,6,23,.12);
-          padding: 16px;
-          align-self: start;
-        }
-
-        .heroBelow{
-          grid-column: 1 / -1;
-          padding: 14px 0 0;
-          border-top: 1px solid rgba(15,23,42,.10);
-          background: transparent;
-        }
-
         .heroTitle{font-size: 32px}
       }
     `}</style>

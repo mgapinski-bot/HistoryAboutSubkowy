@@ -1,4 +1,5 @@
 // src/App.js
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MapContainer,
@@ -10,14 +11,27 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import twoOaksImg from "./img/two-oaks.png";
-import twoOaks2Img from "./img/Zabytek1.png";
-import Zabytek1Img from "./img/Zabytek1.png";
-import Zabytek2Img from "./img/Zabytek2.png";
-import Zabytek3Img from "./img/Zabytek3.png";
-import Zabytek4Img from "./img/Zabytek4.png";
 
-import videoTestMp4 from "./Video/VideoTest.mp4";
+import twoOaksImg from "../img/two-oaks.png";
+import Zabytek1Img from "../img/Zabytek1.png";
+import Zabytek2Img from "../img/Zabytek2.png";
+import Zabytek3Img from "../img/Zabytek3.png";
+import Zabytek4Img from "../img/Zabytek4.png";
+
+import videoTestMp4 from "../Video/VideoTest.mp4";
+
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomeLayout />} />
+      <Route path="/UnderConstruction" element={<UnderConstruction />} />
+      <Route path="/WorldWindow" element={<WorldWindow />} />
+      {/* opcjonalnie fallback */}
+      {/* <Route path="*" element={<UnderConstruction />} /> */}
+    </Routes>
+  );
+}
 
 /* -------------------- THEME (jasne) -------------------- */
 const theme = {
@@ -25,7 +39,7 @@ const theme = {
   blue2: "#0391e8",
   blue3: "#057bdd",
   green: "#22c55e",
-  bg: "#f7fbff",
+  bg: "#ecf7f0",
   card: "#ffffff",
   text: "#0b132a",
   muted: "#475569",
@@ -198,36 +212,6 @@ function IconMail() {
   );
 }
 
-function IconInfo() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M12 17v-6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 8h.01"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
 /* -------------------- Hook: lock scroll when open -------------------- */
 function useBodyScrollLock(isLocked) {
   useEffect(() => {
@@ -331,7 +315,6 @@ function ImageModal({ src, alt, onClose }) {
       <div className="imgModalShell" onClick={(e) => e.stopPropagation()}>
         <div className="imgModalHd">
           <div className="imgModalTitle">Podgląd zdjęcia</div>
-
           <button
             type="button"
             className="modalCloseBtn"
@@ -375,7 +358,6 @@ function VideoModal({ src, onClose }) {
       <div className="videoModalShell" onClick={(e) => e.stopPropagation()}>
         <div className="imgModalHd">
           <div className="imgModalTitle">Film</div>
-
           <button
             type="button"
             className="modalCloseBtn"
@@ -422,14 +404,12 @@ function ContactModal({ onClose }) {
       aria-label="Kontakt"
       onClick={onClose}
     >
-      {/* używamy tej samej konstrukcji co ImageModal */}
       <div
         className="imgModalShell contactShell"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="imgModalHd">
           <div className="imgModalTitle">Kontakt</div>
-
           <button
             type="button"
             className="modalCloseBtn"
@@ -532,11 +512,14 @@ function HeroArticle({
 }
 
 /* -------------------- ROOT -------------------- */
-export default function App() {
+function HomeLayout() {
   const [scrolled, setScrolled] = useState(false);
 
   const [loc] = useState(SLUBKI);
   const [points, setPoints] = useState(() => makeRandomRouteAround(SLUBKI, 4));
+
+  // ✅ TYLKO JEDNA deklaracja navigate
+  const navigate = useNavigate();
 
   const [openImg, setOpenImg] = useState(null);
   const [videoOpen, setVideoOpen] = useState(false);
@@ -636,7 +619,6 @@ export default function App() {
   const opisBody =
     "Znajdujesz się przy charakterystycznych dębach, które od lat są punktem orientacyjnym dla okolicznych mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu i przygotować do kolejnych przystanków na trasie.";
 
-  const tabs = ["Ścieżka czasu", "Miejsca", "Epoki", "Kontakt"];
   const [activeTab, setActiveTab] = useState("Miejsca");
 
   const navigateToSection = (tabName) => {
@@ -704,11 +686,17 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
+  // ✅ NAWIGACJA: timeline item -> konkretna strona
   const onPickTimelineItem = (label) => {
     setTimelineOpen(false);
+    setMenuOpen(false);
     setActiveTab("Ścieżka czasu");
-    // na razie bez nawigacji
-    // console.log(label);
+
+    if (label === "Okno na Świat, Odzyskanie Niepodległości") {
+      navigate("/WorldWindow");
+    } else {
+      navigate("/UnderConstruction");
+    }
   };
 
   return (
@@ -873,26 +861,6 @@ export default function App() {
             ))}
           </div>
         </aside>
-
-        <div className="headerMapBg" aria-hidden="true">
-          <MapContainer
-            center={center}
-            zoom={14}
-            scrollWheelZoom={false}
-            dragging={false}
-            zoomControl={false}
-            doubleClickZoom={false}
-            touchZoom={false}
-            keyboard={false}
-          >
-            <TileLayer
-              attribution="&copy; OpenStreetMap"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Polyline positions={polyline} />
-          </MapContainer>
-          <div className="headerMapFade" />
-        </div>
 
         <main className="container contentUnderHeader">
           <div className="grid2">
@@ -1203,7 +1171,6 @@ function ThemeStyle() {
         overflow-x: clip;
       }
 
-      /* ===== FIXED TOP HEADER ===== */
       .topHeader{
         position: fixed;
         top: 0;
@@ -1283,7 +1250,6 @@ function ThemeStyle() {
         transform: rotate(180deg) translateY(-1px);
       }
 
-      /* Dropdown pod "Ścieżka czasu" */
       .navDropWrap{ position: relative; }
 
       .navDropdown{
@@ -1331,10 +1297,6 @@ function ThemeStyle() {
         line-height: 1.25;
       }
       .navDropdownItem:hover{ background: rgba(3,145,232,.08); }
-      .navDropdownItem:focus{
-        outline: 3px solid rgba(3,145,232,.35);
-        outline-offset: 2px;
-      }
 
       @media (max-width: 820px){
         .navDropdown{ width: min(520px, 86vw); }
@@ -1454,28 +1416,6 @@ function ThemeStyle() {
         .topLogo{ width: 240px; }
       }
 
-      /* ===== MAPA W TLE ZA HEADER ===== */
-      .headerMapBg{
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: clamp(170px, 22vh, 260px);
-        z-index: 1;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      .headerMapBg .leaflet-container{
-        height: 100%;
-        width: 100%;
-        transform: scale(1.08);
-      }
-      .headerMapFade{
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(2,6,23,.22), rgba(2,6,23,.04) 55%, rgba(247,251,255,1) 100%);
-      }
-
       .container{
         position: relative;
         z-index: 2;
@@ -1508,7 +1448,6 @@ function ThemeStyle() {
         padding: 12px var(--pad) 14px;
       }
 
-      /* ===== PILL LABEL ON CARD ===== */
       .cardLabeled{
         position: relative;
         padding-top: 26px;
@@ -1533,14 +1472,6 @@ function ThemeStyle() {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }
-
-      @media (max-width: 420px){
-        .cardPill{
-          white-space: normal;
-          line-height: 1.15;
-          max-width: calc(100% - (var(--pad) * 2));
-        }
       }
 
       .h1{font-size:18px;margin:0 0 10px;line-height:1.25}
@@ -1602,11 +1533,6 @@ function ThemeStyle() {
         background:transparent;
         cursor:pointer;
       }
-      .imgBtn:focus{
-        outline: 3px solid rgba(3,145,232,.35);
-        outline-offset: 3px;
-        border-radius: 16px;
-      }
 
       .infoGrid{
         display:grid;
@@ -1623,7 +1549,6 @@ function ThemeStyle() {
       .infoLabel{font-size:12px;color:rgba(11,19,42,.70);font-weight:700;margin-bottom:4px}
       .infoValue{font-size:13px;font-weight:800;color:rgba(11,19,42,.88)}
 
-      /* VIDEO */
       .videoWrap{
         margin-top: 6px;
         border-radius: 14px;
@@ -1657,7 +1582,6 @@ function ThemeStyle() {
         background: linear-gradient(180deg, rgba(0,0,0,.70), rgba(0,0,0,.92));
       }
 
-      /* Lista przystanków */
       .routeMeta{
         display:flex;
         flex-wrap:wrap;
@@ -1717,7 +1641,6 @@ function ThemeStyle() {
 
       .footerSpace{height: 14px}
 
-      /* HERO */
       .heroArticle{
         border-radius: var(--radius);
         overflow: hidden;
@@ -1771,7 +1694,6 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
-      /* FULLSCREEN MODALS (zdjęcia, wideo) */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -1826,10 +1748,6 @@ function ThemeStyle() {
         cursor: pointer;
       }
       .modalCloseBtn:hover{background: rgba(255,255,255,.16)}
-      .modalCloseBtn:focus{
-        outline: 3px solid rgba(3,145,232,.45);
-        outline-offset: 2px;
-      }
 
       .imgModalBd{
         display:flex;
@@ -1862,306 +1780,104 @@ function ThemeStyle() {
         border-radius: 16px;
         background: #000;
       }
-      /* ===== CONTACT, ten sam layout modala co zdjęcia ===== */
 
-/* zwężamy samo okno (shell), header zostaje na całą szerokość okna */
-.contactShell{
-  width: min(760px, 92vw);
-  height: auto;
-  max-height: 92vh;
-  margin: auto;
-  border-radius: 16px;
-  overflow: hidden;
-  background: transparent;
-}
-
-/* body kontaktu ma zachowywać się jak podgląd zdjęcia: center + scroll */
-.contactBd{
-  width: 100%;
-  padding: 12px;
-  overflow: auto;
-  display: grid;
-  place-items: center;
-}
-
-/* panel z treścią, jak "zdjęcie" - ograniczona szerokość */
-.contactPanel{
-  width: min(620px, 90vw);
-  background: rgba(255,255,255,.96);
-  border: 1px solid rgba(15,23,42,.12);
-  border-radius: 16px;
-  box-shadow: 0 18px 46px rgba(2,6,23,.22);
-  padding: 14px;
-}
-
-/* krótkie intro */
-.contactLead{
-  font-size: 13px;
-  font-weight: 800;
-  color: rgba(71,85,105,.92);
-  margin-bottom: 12px;
-  line-height: 1.25;
-}
-
-/* 2 kolumny desktop, 1 kolumna mobile */
-.contactGrid{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-@media (max-width: 760px){
-  .contactGrid{ grid-template-columns: 1fr; }
-}
-
-/* małe karty, bez “wielkich boxów” */
-.contactMiniCard{
-  border: 1px solid rgba(3,79,189,.14);
-  background: rgba(247,251,255,.70);
-  border-radius: 14px;
-  padding: 12px;
-}
-
-.contactMiniTitle{
-  font-weight: 950;
-  font-size: 13px;
-  color: rgba(3,79,189,.95);
-  margin-bottom: 8px;
-}
-
-/* wiersze danych: label + value */
-.contactMiniRow{
-  display: grid;
-  grid-template-columns: 92px 1fr;
-  gap: 10px;
-  align-items: center;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.86);
-  text-decoration: none;
-  color: inherit;
-  margin-top: 8px;
-}
-
-.contactMiniRow.link:hover{
-  background: rgba(3,145,232,.08);
-  border-color: rgba(3,145,232,.22);
-}
-
-.contactMiniLabel{
-  font-size: 11px;
-  font-weight: 850;
-  color: rgba(71,85,105,.90);
-}
-
-.contactMiniValue{
-  font-size: 13px;
-  font-weight: 950;
-  color: rgba(11,19,42,.92);
-  word-break: break-word;
-}
-
-.contactHint{
-  margin-top: 12px;
-  font-size: 12px;
-  font-weight: 750;
-  color: rgba(71,85,105,.80);
-  text-align: center;
-}
-
-      /* ===== CONTACT MODAL (layout jak w przykładzie) ===== */
-      .imgModalBackdrop{
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,.92);
-        z-index: 9000;
-        display: grid;
-        padding: clamp(12px, 3vh, 28px) clamp(12px, 3vw, 28px);
-      }
-      
-      .contactModalShell{
-        width: min(980px, 94vw);
-        max-height: calc(100vh - (clamp(12px, 3vh, 28px) * 2));
+      .contactShell{
+        width: min(760px, 92vw);
+        height: auto;
+        max-height: 92vh;
         margin: auto;
         border-radius: 16px;
         overflow: hidden;
-        background: #ffffff;
-        box-shadow: 0 24px 60px rgba(2,6,23,.35);
-        border: 1px solid rgba(255,255,255,.10);
-        display: grid;
-        grid-template-rows: auto 1fr;
+        background: transparent;
       }
-      
-      .contactModalHd{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        padding: 12px 14px;
-        background: rgba(0,0,0,.88);
-        border-bottom: 1px solid rgba(255,255,255,.12);
-      }
-      
-      .contactModalTitle{
-        font-weight: 900;
-        color: rgba(255,255,255,.94);
-        font-size: 13px;
-      }
-      
-      .contactModalBd{
-        padding: 14px;
+
+      .contactBd{
+        width: 100%;
+        padding: 12px;
         overflow: auto;
-        background:
-          radial-gradient(700px 260px at 15% 0%, rgba(3,145,232,.10), transparent 60%),
-          radial-gradient(700px 260px at 85% 10%, rgba(34,197,94,.08), transparent 60%),
-          linear-gradient(180deg, rgba(247,251,255,1), rgba(255,255,255,1));
-      }
-      
-      .contactIntro{
-        font-size: 13px;
-        font-weight: 750;
-        color: rgba(71,85,105,.92);
-        line-height: 1.35;
-        margin-bottom: 12px;
-      }
-      
-      .contactGrid{
-        display: grid;
-        gap: 14px;
-        grid-template-columns: 1fr 1fr;
-      }
-      
-      @media (max-width: 820px){
-        .contactGrid{ grid-template-columns: 1fr; }
-        .contactModalShell{ width: min(640px, 94vw); }
-      }
-      
-      /* karty */
-      .contactCard{
-        background: rgba(255,255,255,.92);
-        border: 1px solid rgba(3,79,189,.14);
-        border-radius: 16px;
-        box-shadow: 0 12px 28px rgba(2,6,23,.08);
-        padding: 14px;
-      }
-      
-      .contactCardTop{
-        display: grid;
-        grid-template-columns: 44px 1fr;
-        gap: 10px;
-        align-items: start;
-        margin-bottom: 10px;
-      }
-      
-      .contactCardIcon{
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
         display: grid;
         place-items: center;
-        background: rgba(3,145,232,.12);
-        color: rgba(3,79,189,.95);
-        border: 1px solid rgba(3,145,232,.20);
       }
-      
-      .contactCardIcon.app{
-        background: rgba(34,197,94,.12);
-        color: rgba(16,185,129,.98);
-        border-color: rgba(34,197,94,.22);
+
+      .contactPanel{
+        width: min(620px, 90vw);
+        background: rgba(255,255,255,.96);
+        border: 1px solid rgba(15,23,42,.12);
+        border-radius: 16px;
+        box-shadow: 0 18px 46px rgba(2,6,23,.22);
+        padding: 14px;
       }
-      
-      .contactCardTitle{
+
+      .contactLead{
+        font-size: 13px;
+        font-weight: 800;
+        color: rgba(71,85,105,.92);
+        margin-bottom: 12px;
+        line-height: 1.25;
+      }
+
+      .contactGrid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      @media (max-width: 760px){
+        .contactGrid{ grid-template-columns: 1fr; }
+      }
+
+      .contactMiniCard{
+        border: 1px solid rgba(3,79,189,.14);
+        background: rgba(247,251,255,.70);
+        border-radius: 14px;
+        padding: 12px;
+      }
+
+      .contactMiniTitle{
         font-weight: 950;
-        color: rgba(11,19,42,.92);
-        font-size: 14px;
-        margin-bottom: 4px;
+        font-size: 13px;
+        color: rgba(3,79,189,.95);
+        margin-bottom: 8px;
       }
-      
-      .contactCardDesc{
-        color: rgba(71,85,105,.90);
-        font-weight: 650;
-        font-size: 12px;
-        line-height: 1.35;
-      }
-      
-      .contactLines{
+
+      .contactMiniRow{
         display: grid;
-        gap: 10px;
-      }
-      
-      .contactLine{
-        text-decoration: none;
-        display: grid;
-        grid-template-columns: 42px 1fr;
+        grid-template-columns: 92px 1fr;
         gap: 10px;
         align-items: center;
-        padding: 10px 10px;
-        border-radius: 14px;
+        padding: 8px 10px;
+        border-radius: 12px;
         border: 1px solid rgba(15,23,42,.10);
         background: rgba(255,255,255,.86);
-        color: rgba(11,19,42,.90);
+        text-decoration: none;
+        color: inherit;
+        margin-top: 8px;
       }
-      
-      .contactLine:hover{
+
+      .contactMiniRow.link:hover{
         background: rgba(3,145,232,.08);
         border-color: rgba(3,145,232,.22);
       }
-      
-      .contactLineIcon{
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        display: grid;
-        place-items: center;
-        background: rgba(3,79,189,.08);
-        color: rgba(3,79,189,.95);
-        border: 1px solid rgba(3,79,189,.14);
-      }
-      
-      .contactLineLabel{
-        display: block;
+
+      .contactMiniLabel{
         font-size: 11px;
-        font-weight: 800;
-        color: rgba(71,85,105,.92);
-        margin-bottom: 2px;
+        font-weight: 850;
+        color: rgba(71,85,105,.90);
       }
-      
-      .contactLineValue{
-        display: block;
+
+      .contactMiniValue{
         font-size: 13px;
         font-weight: 950;
         color: rgba(11,19,42,.92);
-        line-height: 1.1;
         word-break: break-word;
       }
-      
-      .contactNote{
-        margin-top: 10px;
-        font-size: 12px;
-        font-weight: 750;
-        color: rgba(71,85,105,.92);
-      }
-      
-      .contactFooterHint{
+
+      .contactHint{
         margin-top: 12px;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 750;
         color: rgba(71,85,105,.80);
         text-align: center;
-      }
-
-      @media (max-width: 820px){
-        .contactGrid{ grid-template-columns: 1fr; }
-        .contactModalShell{ width: min(640px, 94vw); }
-      }
-
-      @media (max-width: 480px){
-        .contactHeroTitle{ font-size: 20px; }
-      }
-
-      @media (max-width: 480px){
-        .modalCloseBtn{ width: 44px; height: 44px; }
       }
 
       @media (max-width: 360px){
@@ -2176,5 +1892,13 @@ function ThemeStyle() {
         .heroTitle{font-size: 32px}
       }
     `}</style>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }

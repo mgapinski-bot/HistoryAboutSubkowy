@@ -25,7 +25,7 @@ const theme = {
   blue2: "#0391e8",
   blue3: "#057bdd",
   green: "#22c55e",
-  bg: "#f7fbff",
+  bg: "#ecf7f0",
   card: "#ffffff",
   text: "#0b132a",
   muted: "#475569",
@@ -874,26 +874,6 @@ export default function App() {
           </div>
         </aside>
 
-        <div className="headerMapBg" aria-hidden="true">
-          <MapContainer
-            center={center}
-            zoom={14}
-            scrollWheelZoom={false}
-            dragging={false}
-            zoomControl={false}
-            doubleClickZoom={false}
-            touchZoom={false}
-            keyboard={false}
-          >
-            <TileLayer
-              attribution="&copy; OpenStreetMap"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Polyline positions={polyline} />
-          </MapContainer>
-          <div className="headerMapFade" />
-        </div>
-
         <main className="container contentUnderHeader">
           <div className="grid2">
             <div className="leftCol">
@@ -1454,27 +1434,7 @@ function ThemeStyle() {
         .topLogo{ width: 240px; }
       }
 
-      /* ===== MAPA W TLE ZA HEADER ===== */
-      .headerMapBg{
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: clamp(170px, 22vh, 260px);
-        z-index: 1;
-        pointer-events: none;
-        overflow: hidden;
-      }
-      .headerMapBg .leaflet-container{
-        height: 100%;
-        width: 100%;
-        transform: scale(1.08);
-      }
-      .headerMapFade{
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(2,6,23,.22), rgba(2,6,23,.04) 55%, rgba(247,251,255,1) 100%);
-      }
+      
 
       .container{
         position: relative;

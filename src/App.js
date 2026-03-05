@@ -15,6 +15,7 @@ import UnderConstruction from "./Pages/UnderConstruction";
 import WorldWindow from "./Pages/WorldWindow";
 
 import twoOaksImg from "./img/two-oaks.png";
+import twoOaks2Img from "./img/2oaks.png";
 import Zabytek1Img from "./img/Zabytek1.png";
 import Zabytek2Img from "./img/Zabytek2.png";
 import Zabytek3Img from "./img/Zabytek3.png";

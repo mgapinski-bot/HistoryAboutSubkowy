@@ -11,15 +11,14 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-
 import twoOaksImg from "../img/two-oaks.png";
+import twoOaks2Img from "../img/2oaks.png";
 import Zabytek1Img from "../img/Zabytek1.png";
 import Zabytek2Img from "../img/Zabytek2.png";
 import Zabytek3Img from "../img/Zabytek3.png";
 import Zabytek4Img from "../img/Zabytek4.png";
 
 import videoTestMp4 from "../Video/VideoTest.mp4";
-
 
 function AppRoutes() {
   return (

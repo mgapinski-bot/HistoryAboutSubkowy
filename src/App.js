@@ -134,6 +134,100 @@ function IconX() {
   );
 }
 
+function IconChevronDown() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 9l6 6 6-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconPhone() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.32 1.7.6 2.5a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.58-1.12a2 2 0 0 1 2.11-.45c.8.28 1.64.48 2.5.6A2 2 0 0 1 22 16.92Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconMail() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 4h16v16H4V4Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="m22 6-10 7L2 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconInfo() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 17v-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 8h.01"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+    </svg>
+  );
+}
+
 /* -------------------- Hook: lock scroll when open -------------------- */
 function useBodyScrollLock(isLocked) {
   useEffect(() => {
@@ -307,6 +401,106 @@ function VideoModal({ src, onClose }) {
   );
 }
 
+/* -------------------- Modal: kontakt -------------------- */
+function ContactModal({ onClose }) {
+  useBodyScrollLock(true);
+  useHeaderBehindModal(true);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="imgModalBackdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Kontakt"
+      onClick={onClose}
+    >
+      {/* używamy tej samej konstrukcji co ImageModal */}
+      <div
+        className="imgModalShell contactShell"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="imgModalHd">
+          <div className="imgModalTitle">Kontakt</div>
+
+          <button
+            type="button"
+            className="modalCloseBtn"
+            onClick={onClose}
+            aria-label="Zamknij"
+            title="Zamknij"
+          >
+            <IconX />
+          </button>
+        </div>
+
+        <div className="imgModalBd contactBd">
+          <div className="contactPanel">
+            <div className="contactLead">
+              Wybierz właściwy kontakt, merytoryczny lub techniczny.
+            </div>
+
+            <div className="contactGrid">
+              <div className="contactMiniCard">
+                <div className="contactMiniTitle">Kontakt merytoryczny</div>
+
+                <div className="contactMiniRow">
+                  <div className="contactMiniLabel">Imię</div>
+                  <div className="contactMiniValue">Jan Kowalski</div>
+                </div>
+
+                <a className="contactMiniRow link" href="tel:+48123123123">
+                  <div className="contactMiniLabel">Telefon</div>
+                  <div className="contactMiniValue">+48 123 123 123</div>
+                </a>
+
+                <a
+                  className="contactMiniRow link"
+                  href="mailto:kontakt@twojadomena.pl"
+                >
+                  <div className="contactMiniLabel">Email</div>
+                  <div className="contactMiniValue">kontakt@twojadomena.pl</div>
+                </a>
+              </div>
+
+              <div className="contactMiniCard">
+                <div className="contactMiniTitle">Kontakt techniczny</div>
+
+                <div className="contactMiniRow">
+                  <div className="contactMiniLabel">Imię</div>
+                  <div className="contactMiniValue">Support Team</div>
+                </div>
+
+                <a className="contactMiniRow link" href="tel:+48555111222">
+                  <div className="contactMiniLabel">Telefon</div>
+                  <div className="contactMiniValue">+48 555 111 222</div>
+                </a>
+
+                <a
+                  className="contactMiniRow link"
+                  href="mailto:support@twojadomena.pl"
+                >
+                  <div className="contactMiniLabel">Email</div>
+                  <div className="contactMiniValue">support@twojadomena.pl</div>
+                </a>
+              </div>
+            </div>
+
+            <div className="contactHint">Kliknij poza oknem, aby zamknąć.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* -------------------- HERO ARTICLE -------------------- */
 function HeroArticle({
   imgSrc,
@@ -349,6 +543,40 @@ export default function App() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   useBodyScrollLock(menuOpen);
+
+  // Dropdown pod "Ścieżka czasu"
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const timelineWrapRef = useRef(null);
+
+  // Kontakt popup
+  const [contactOpen, setContactOpen] = useState(false);
+
+  const timelineItems = useMemo(
+    () => [
+      "Okno na Świat, Odzyskanie Niepodległości",
+      "Marzenie, Leonid Teliga",
+      "Sobek, Legendarny Założyciel",
+      "Wejście do Grodu Kerin, Grecja i Początki Europy",
+      "Rzym, Koloseum i Gladiatorzy",
+      "Słowianie i Wikingowie, Narodziny Polski",
+      "Św. Wojciech, Patron i Misjonarz",
+      "Odwaga, Pomnik Młodzieży",
+    ],
+    []
+  );
+
+  // zamykaj dropdown klikając poza nim
+  useEffect(() => {
+    const onDown = (e) => {
+      if (!timelineOpen) return;
+      const el = timelineWrapRef.current;
+      if (!el) return;
+      if (el.contains(e.target)) return;
+      setTimelineOpen(false);
+    };
+    window.addEventListener("mousedown", onDown);
+    return () => window.removeEventListener("mousedown", onDown);
+  }, [timelineOpen]);
 
   const routeImages = useMemo(
     () => [
@@ -409,25 +637,46 @@ export default function App() {
     "Znajdujesz się przy charakterystycznych dębach, które od lat są punktem orientacyjnym dla okolicznych mieszkańców. To dobry moment, żeby rozejrzeć się po otoczeniu i przygotować do kolejnych przystanków na trasie.";
 
   const tabs = ["Ścieżka czasu", "Miejsca", "Epoki", "Kontakt"];
-  const [activeTab, setActiveTab] = useState("Tematy");
+  const [activeTab, setActiveTab] = useState("Miejsca");
 
-  const onNavigate = (tabName) => {
-    setActiveTab(tabName);
-    setMenuOpen(false);
-
+  const navigateToSection = (tabName) => {
     const idMap = {
-      "Ścieżka czasu": "section-tematy",
       Miejsca: "section-miejsca",
       Epoki: "section-epoki",
-      Kontakt: "section-kontakt",
     };
     const el = document.getElementById(idMap[tabName]);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const onNavigate = (tabName) => {
+    if (tabName === "Ścieżka czasu") {
+      setTimelineOpen((v) => !v);
+      setMenuOpen(false);
+      return;
+    }
+
+    if (tabName === "Kontakt") {
+      setActiveTab("Kontakt");
+      setTimelineOpen(false);
+      setMenuOpen(false);
+      setContactOpen(true);
+      return;
+    }
+
+    setActiveTab(tabName);
+    setTimelineOpen(false);
+    setMenuOpen(false);
+    setContactOpen(false);
+    navigateToSection(tabName);
+  };
+
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape") setMenuOpen(false);
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        setTimelineOpen(false);
+        setContactOpen(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -455,7 +704,13 @@ export default function App() {
     return () => obs.disconnect();
   }, []);
 
-  // usuwamy headerowe tytuły wewnątrz kart, a wysokości trzymamy przez grid / mapWrap / videoWrap
+  const onPickTimelineItem = (label) => {
+    setTimelineOpen(false);
+    setActiveTab("Ścieżka czasu");
+    // na razie bez nawigacji
+    // console.log(label);
+  };
+
   return (
     <>
       <ThemeStyle />
@@ -468,7 +723,52 @@ export default function App() {
             </div>
 
             <nav className="topNavDesktop" aria-label="Menu główne">
-              {tabs.map((t) => (
+              <div className="navDropWrap" ref={timelineWrapRef}>
+                <button
+                  type="button"
+                  className={`topTab topTabDrop ${
+                    activeTab === "Ścieżka czasu" || timelineOpen
+                      ? "active"
+                      : ""
+                  }`}
+                  aria-haspopup="menu"
+                  aria-expanded={timelineOpen}
+                  onClick={() => onNavigate("Ścieżka czasu")}
+                >
+                  <span>Ścieżka czasu</span>
+                  <span
+                    className={`chev ${timelineOpen ? "up" : ""}`}
+                    aria-hidden="true"
+                  >
+                    <IconChevronDown />
+                  </span>
+                </button>
+
+                {timelineOpen && (
+                  <div
+                    className="navDropdown"
+                    role="menu"
+                    aria-label="Ścieżka czasu"
+                  >
+                    <div className="navDropdownArrow" aria-hidden="true" />
+                    <div className="navDropdownGrid">
+                      {timelineItems.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          className="navDropdownItem"
+                          role="menuitem"
+                          onClick={() => onPickTimelineItem(t)}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {["Miejsca", "Epoki", "Kontakt"].map((t) => (
                 <button
                   key={t}
                   type="button"
@@ -485,7 +785,10 @@ export default function App() {
               className="topMobileTrigger"
               aria-label={menuOpen ? "Zamknij menu" : "Otwórz menu"}
               aria-expanded={menuOpen}
-              onClick={() => setMenuOpen((v) => !v)}
+              onClick={() => {
+                setMenuOpen((v) => !v);
+                setTimelineOpen(false);
+              }}
             >
               <span className="topIcon" aria-hidden="true">
                 {menuOpen ? <IconX /> : <IconHamburger />}
@@ -519,12 +822,50 @@ export default function App() {
           </div>
 
           <div className="topSidebarList" role="list">
-            {tabs.map((t) => (
+            <button
+              type="button"
+              className="topSidebarItem"
+              onClick={() => setTimelineOpen((v) => !v)}
+              role="listitem"
+              aria-expanded={timelineOpen}
+            >
+              Ścieżka czasu
+            </button>
+
+            {timelineOpen && (
+              <div className="sideSubMenu" role="list">
+                {timelineItems.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    className="sideSubItem"
+                    onClick={() => {
+                      onPickTimelineItem(t);
+                      setMenuOpen(false);
+                    }}
+                    role="listitem"
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {["Miejsca", "Epoki", "Kontakt"].map((t) => (
               <button
                 key={t}
                 type="button"
                 className="topSidebarItem"
-                onClick={() => onNavigate(t)}
+                onClick={() => {
+                  setTimelineOpen(false);
+                  if (t === "Kontakt") {
+                    setActiveTab("Kontakt");
+                    setMenuOpen(false);
+                    setContactOpen(true);
+                    return;
+                  }
+                  onNavigate(t);
+                }}
                 role="listitem"
               >
                 {t}
@@ -556,7 +897,7 @@ export default function App() {
         <main className="container contentUnderHeader">
           <div className="grid2">
             <div className="leftCol">
-              <div className="card cardLabeled" id="section-tematy">
+              <div className="card cardLabeled" id="section-miejsca">
                 <CardPillLabel text="Miejsca" variant="miejsca" />
 
                 <h1 className="h1">{welcome}</h1>
@@ -664,8 +1005,8 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rightSticky" id="section-miejsca">
-              <div className="card cardLabeled">
+            <div className="rightSticky">
+              <div className="card cardLabeled" id="section-mapa">
                 <CardPillLabel text="Mapa trasy" variant="mapa" />
 
                 <div className="mapWrap" style={{ marginTop: 6 }}>
@@ -815,6 +1156,8 @@ export default function App() {
         {videoOpen && (
           <VideoModal src={videoTestMp4} onClose={() => setVideoOpen(false)} />
         )}
+
+        {contactOpen && <ContactModal onClose={() => setContactOpen(false)} />}
       </div>
     </>
   );
@@ -925,6 +1268,79 @@ function ThemeStyle() {
         color: rgba(3,79,189,.95);
       }
 
+      .topTabDrop{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .topTabDrop .chev{
+        display:inline-flex;
+        opacity: .9;
+        transform: translateY(1px);
+        transition: transform .14s ease;
+      }
+      .topTabDrop .chev.up{
+        transform: rotate(180deg) translateY(-1px);
+      }
+
+      /* Dropdown pod "Ścieżka czasu" */
+      .navDropWrap{ position: relative; }
+
+      .navDropdown{
+        position: absolute;
+        top: calc(100% + 10px);
+        left: 0;
+        width: min(560px, 72vw);
+        background: rgba(255,255,255,.98);
+        border: 1px solid rgba(15,23,42,.14);
+        border-radius: 14px;
+        box-shadow: 0 18px 46px rgba(2,6,23,.18);
+        padding: 14px;
+        z-index: 5002;
+      }
+
+      .navDropdownArrow{
+        position: absolute;
+        top: -7px;
+        left: 40px;
+        width: 14px;
+        height: 14px;
+        background: rgba(255,255,255,.98);
+        border-left: 1px solid rgba(15,23,42,.14);
+        border-top: 1px solid rgba(15,23,42,.14);
+        transform: rotate(45deg);
+      }
+
+      .navDropdownGrid{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 26px;
+      }
+
+      .navDropdownItem{
+        width: 100%;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        text-align: left;
+        padding: 10px 10px;
+        border-radius: 12px;
+        color: rgba(11,19,42,.88);
+        font-weight: 750;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+      .navDropdownItem:hover{ background: rgba(3,145,232,.08); }
+      .navDropdownItem:focus{
+        outline: 3px solid rgba(3,145,232,.35);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 820px){
+        .navDropdown{ width: min(520px, 86vw); }
+        .navDropdownGrid{ grid-template-columns: 1fr; }
+      }
+
       .topMobileTrigger{
         margin-left: auto;
         border: 0;
@@ -980,10 +1396,7 @@ function ThemeStyle() {
         justify-content: space-between;
         border-bottom: 1px solid rgba(15,23,42,.10);
       }
-      .topSidebarTitle{
-        font-weight: 950;
-        color: rgba(11,19,42,.92);
-      }
+      .topSidebarTitle{ font-weight: 950; color: rgba(11,19,42,.92); }
       .topSidebarClose{
         border: 0;
         background: transparent;
@@ -1015,6 +1428,25 @@ function ThemeStyle() {
         background: rgba(3,145,232,.08);
         border-color: rgba(3,145,232,.20);
       }
+
+      .sideSubMenu{
+        margin-top: -6px;
+        padding: 8px 10px 2px 10px;
+        border-left: 2px solid rgba(3,145,232,.22);
+        display: grid;
+        gap: 6px;
+      }
+      .sideSubItem{
+        border: 0;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+        padding: 10px 10px;
+        border-radius: 12px;
+        color: rgba(11,19,42,.86);
+        font-weight: 750;
+      }
+      .sideSubItem:hover{ background: rgba(3,145,232,.08); }
 
       @media (max-width: 768px){
         .topNavDesktop{display:none}
@@ -1052,9 +1484,7 @@ function ThemeStyle() {
         gap: var(--gap);
       }
 
-      .contentUnderHeader{
-        padding-top: 90px;
-      }
+      .contentUnderHeader{ padding-top: 90px; }
 
       .grid2{
         display: grid;
@@ -1093,7 +1523,7 @@ function ThemeStyle() {
         display: inline-flex;
         align-items: center;
         max-width: calc(100% - (var(--pad) * 2));
-        padding: 7px 20px;
+        padding: 7px 25px;
         border-radius: 4px;
         font-weight: 950;
         font-size: 12px;
@@ -1235,10 +1665,7 @@ function ThemeStyle() {
         margin-bottom: 10px;
       }
 
-      .routeList{
-        display: grid;
-        gap: 10px;
-      }
+      .routeList{ display: grid; gap: 10px; }
 
       .routeRow{
         display:grid;
@@ -1344,7 +1771,7 @@ function ThemeStyle() {
         background: rgba(255,255,255,.80);
       }
 
-      /* FULLSCREEN MODALS */
+      /* FULLSCREEN MODALS (zdjęcia, wideo) */
       .imgModalBackdrop{
         position: fixed;
         inset: 0;
@@ -1434,6 +1861,303 @@ function ThemeStyle() {
         max-height: 82vh;
         border-radius: 16px;
         background: #000;
+      }
+      /* ===== CONTACT, ten sam layout modala co zdjęcia ===== */
+
+/* zwężamy samo okno (shell), header zostaje na całą szerokość okna */
+.contactShell{
+  width: min(760px, 92vw);
+  height: auto;
+  max-height: 92vh;
+  margin: auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* body kontaktu ma zachowywać się jak podgląd zdjęcia: center + scroll */
+.contactBd{
+  width: 100%;
+  padding: 12px;
+  overflow: auto;
+  display: grid;
+  place-items: center;
+}
+
+/* panel z treścią, jak "zdjęcie" - ograniczona szerokość */
+.contactPanel{
+  width: min(620px, 90vw);
+  background: rgba(255,255,255,.96);
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 16px;
+  box-shadow: 0 18px 46px rgba(2,6,23,.22);
+  padding: 14px;
+}
+
+/* krótkie intro */
+.contactLead{
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(71,85,105,.92);
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+/* 2 kolumny desktop, 1 kolumna mobile */
+.contactGrid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 760px){
+  .contactGrid{ grid-template-columns: 1fr; }
+}
+
+/* małe karty, bez “wielkich boxów” */
+.contactMiniCard{
+  border: 1px solid rgba(3,79,189,.14);
+  background: rgba(247,251,255,.70);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.contactMiniTitle{
+  font-weight: 950;
+  font-size: 13px;
+  color: rgba(3,79,189,.95);
+  margin-bottom: 8px;
+}
+
+/* wiersze danych: label + value */
+.contactMiniRow{
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255,255,255,.86);
+  text-decoration: none;
+  color: inherit;
+  margin-top: 8px;
+}
+
+.contactMiniRow.link:hover{
+  background: rgba(3,145,232,.08);
+  border-color: rgba(3,145,232,.22);
+}
+
+.contactMiniLabel{
+  font-size: 11px;
+  font-weight: 850;
+  color: rgba(71,85,105,.90);
+}
+
+.contactMiniValue{
+  font-size: 13px;
+  font-weight: 950;
+  color: rgba(11,19,42,.92);
+  word-break: break-word;
+}
+
+.contactHint{
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 750;
+  color: rgba(71,85,105,.80);
+  text-align: center;
+}
+
+      /* ===== CONTACT MODAL (layout jak w przykładzie) ===== */
+      .imgModalBackdrop{
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.92);
+        z-index: 9000;
+        display: grid;
+        padding: clamp(12px, 3vh, 28px) clamp(12px, 3vw, 28px);
+      }
+      
+      .contactModalShell{
+        width: min(980px, 94vw);
+        max-height: calc(100vh - (clamp(12px, 3vh, 28px) * 2));
+        margin: auto;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 24px 60px rgba(2,6,23,.35);
+        border: 1px solid rgba(255,255,255,.10);
+        display: grid;
+        grid-template-rows: auto 1fr;
+      }
+      
+      .contactModalHd{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        padding: 12px 14px;
+        background: rgba(0,0,0,.88);
+        border-bottom: 1px solid rgba(255,255,255,.12);
+      }
+      
+      .contactModalTitle{
+        font-weight: 900;
+        color: rgba(255,255,255,.94);
+        font-size: 13px;
+      }
+      
+      .contactModalBd{
+        padding: 14px;
+        overflow: auto;
+        background:
+          radial-gradient(700px 260px at 15% 0%, rgba(3,145,232,.10), transparent 60%),
+          radial-gradient(700px 260px at 85% 10%, rgba(34,197,94,.08), transparent 60%),
+          linear-gradient(180deg, rgba(247,251,255,1), rgba(255,255,255,1));
+      }
+      
+      .contactIntro{
+        font-size: 13px;
+        font-weight: 750;
+        color: rgba(71,85,105,.92);
+        line-height: 1.35;
+        margin-bottom: 12px;
+      }
+      
+      .contactGrid{
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      @media (max-width: 820px){
+        .contactGrid{ grid-template-columns: 1fr; }
+        .contactModalShell{ width: min(640px, 94vw); }
+      }
+      
+      /* karty */
+      .contactCard{
+        background: rgba(255,255,255,.92);
+        border: 1px solid rgba(3,79,189,.14);
+        border-radius: 16px;
+        box-shadow: 0 12px 28px rgba(2,6,23,.08);
+        padding: 14px;
+      }
+      
+      .contactCardTop{
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 10px;
+        align-items: start;
+        margin-bottom: 10px;
+      }
+      
+      .contactCardIcon{
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(3,145,232,.12);
+        color: rgba(3,79,189,.95);
+        border: 1px solid rgba(3,145,232,.20);
+      }
+      
+      .contactCardIcon.app{
+        background: rgba(34,197,94,.12);
+        color: rgba(16,185,129,.98);
+        border-color: rgba(34,197,94,.22);
+      }
+      
+      .contactCardTitle{
+        font-weight: 950;
+        color: rgba(11,19,42,.92);
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+      
+      .contactCardDesc{
+        color: rgba(71,85,105,.90);
+        font-weight: 650;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+      
+      .contactLines{
+        display: grid;
+        gap: 10px;
+      }
+      
+      .contactLine{
+        text-decoration: none;
+        display: grid;
+        grid-template-columns: 42px 1fr;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(15,23,42,.10);
+        background: rgba(255,255,255,.86);
+        color: rgba(11,19,42,.90);
+      }
+      
+      .contactLine:hover{
+        background: rgba(3,145,232,.08);
+        border-color: rgba(3,145,232,.22);
+      }
+      
+      .contactLineIcon{
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(3,79,189,.08);
+        color: rgba(3,79,189,.95);
+        border: 1px solid rgba(3,79,189,.14);
+      }
+      
+      .contactLineLabel{
+        display: block;
+        font-size: 11px;
+        font-weight: 800;
+        color: rgba(71,85,105,.92);
+        margin-bottom: 2px;
+      }
+      
+      .contactLineValue{
+        display: block;
+        font-size: 13px;
+        font-weight: 950;
+        color: rgba(11,19,42,.92);
+        line-height: 1.1;
+        word-break: break-word;
+      }
+      
+      .contactNote{
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 750;
+        color: rgba(71,85,105,.92);
+      }
+      
+      .contactFooterHint{
+        margin-top: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(71,85,105,.80);
+        text-align: center;
+      }
+
+      @media (max-width: 820px){
+        .contactGrid{ grid-template-columns: 1fr; }
+        .contactModalShell{ width: min(640px, 94vw); }
+      }
+
+      @media (max-width: 480px){
+        .contactHeroTitle{ font-size: 20px; }
       }
 
       @media (max-width: 480px){

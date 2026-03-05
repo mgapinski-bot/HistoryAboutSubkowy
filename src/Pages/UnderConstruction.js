@@ -16,7 +16,13 @@ const theme = {
 /* -------------------- Icons -------------------- */
 function IconHamburger() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M4 6h16M4 12h16M4 18h16"
         stroke="currentColor"
@@ -28,7 +34,13 @@ function IconHamburger() {
 }
 function IconX() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M6 6l12 12M18 6L6 18"
         stroke="currentColor"
@@ -40,9 +52,25 @@ function IconX() {
 }
 function IconInfo() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 17v-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 17v-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 8h.01"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
       <path
         d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
         stroke="currentColor"
@@ -61,7 +89,8 @@ function useBodyScrollLock(isLocked) {
     const prevOverflow = body.style.overflow;
     const prevPaddingRight = body.style.paddingRight;
 
-    const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const scrollBarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
 
     body.style.overflow = "hidden";
     if (scrollBarWidth > 0) body.style.paddingRight = `${scrollBarWidth}px`;
@@ -108,7 +137,14 @@ function UnderConstructionArt() {
         <path d="M168 32h64l-16 64h-64l16-64Z" fill="rgba(242,183,5,.85)" />
         <path d="M152 96h64l-10 44h-64l10-44Z" fill="rgba(3,79,189,.18)" />
         <path d="M144 140h64l-8 34h-64l8-34Z" fill="rgba(242,183,5,.75)" />
-        <rect x="118" y="220" width="250" height="20" rx="10" fill="rgba(11,19,42,.12)" />
+        <rect
+          x="118"
+          y="220"
+          width="250"
+          height="20"
+          rx="10"
+          fill="rgba(11,19,42,.12)"
+        />
       </g>
 
       {/* Small label */}
@@ -122,7 +158,13 @@ function UnderConstructionArt() {
           fill="rgba(255,255,255,.86)"
           stroke="rgba(15,23,42,.10)"
         />
-        <text x="18" y="30" fontSize="16" fontWeight="800" fill="rgba(11,19,42,.82)">
+        <text
+          x="18"
+          y="30"
+          fontSize="16"
+          fontWeight="800"
+          fill="rgba(11,19,42,.82)"
+        >
           Prace trwają
         </text>
       </g>
@@ -231,8 +273,9 @@ export default function UnderConstruction() {
 
               <h1 className="ucTitle">Pracujemy nad tą częścią strony</h1>
               <p className="ucText">
-                Wkrótce pojawią się tu treści związane z historią i trasą. Na ten moment
-                przygotowujemy materiały, zdjęcia oraz opisy przystanków.
+                Wkrótce pojawią się tu treści związane z historią i trasą. Na
+                ten moment przygotowujemy materiały, zdjęcia oraz opisy
+                przystanków.
               </p>
 
               <div className="ucPills">
